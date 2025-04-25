@@ -36,7 +36,7 @@ Make sure to follow this procedure when making changes:
 
 Angular apps are modular, made of bricks called *components* and *services*. 
 
-## Components
+### Components
 
 Components are frontend elements, each component has it's own TypeScript, HTML and CSS file.
 
