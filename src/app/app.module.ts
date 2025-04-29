@@ -37,7 +37,8 @@ import { LineChartComponent } from './components/line-chart/line-chart.component
 import { CapitalAndSpacePipe } from './shared/pipe/capital-and-space.pipe';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { DescriptionSnackbarComponent } from './shared/components/description-snackbar/description-snackbar.component';
-
+import { SpinnerInterceptor } from './shared/interceptor/spinner-interceptor';
+import { NgxSpinnerModule } from 'ngx-spinner';
 // function initializeKeycloak(keycloak: KeycloakService) {
 //   return () =>
 //     keycloak.init({
@@ -69,6 +70,8 @@ import { DescriptionSnackbarComponent } from './shared/components/description-sn
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
+    HttpClientModule,
+    NgxSpinnerModule,
     MatFormFieldModule,
     MatSidenavModule,
     MatButtonModule,
@@ -115,6 +118,11 @@ import { DescriptionSnackbarComponent } from './shared/components/description-sn
     },
     {
       provide: HTTP_INTERCEPTORS,
+      useClass: SpinnerInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
       useClass: KeycloakBearerInterceptorInterceptor,
       multi: true
     },
@@ -124,7 +132,7 @@ import { DescriptionSnackbarComponent } from './shared/components/description-sn
     MatDatepickerModule,
     HttpClientModule
   ],
-
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
