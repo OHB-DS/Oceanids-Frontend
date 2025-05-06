@@ -10,6 +10,7 @@
             <mat-button-toggle value="daily">Daily</mat-button-toggle>
             <mat-button-toggle value="monthly">Monthly</mat-button-toggle>
             <mat-button-toggle value="climatology">Climatology</mat-button-toggle>
+            <mat-button-toggle value="extremes">Extremes</mat-button-toggle>
         </mat-button-toggle-group>
         <div *ngIf="dataServiceName === 'wave_climate'">
             <mat-button-toggle-group [value]="selectedFilters.timeRange" (change)="updateFilter('timeRange', $event.value)"

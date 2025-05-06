@@ -417,21 +417,30 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     let dataId = '';
     switch (this.selectedFilters.service) {
       case 'sea_level':
-      // sea level has multiple models (CMCC-CM2-VHR4 and EC-Earth3P-HR), so needs model keyword
-      dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.model + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
-      break;
+        // sea level has multiple models (CMCC-CM2-VHR4 and EC-Earth3P-HR), so needs model keyword
+        if (this.selectedFilters.frequency === 'extremes') {
+          dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.model + '_' + this.selectedFilters.frequency;
+        } else {
+          dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.model + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
+        }
+        break;
       case 'wave_climate':
-      // wave climate has only one model, so no model keyword
-      dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
-      break;
+        // wave climate has only one model, so no model keyword
+        if (this.selectedFilters.frequency === 'extremes') {
+          dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.frequency;
+        } else {
+          dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
+        }
+        break;
       case 'atmospheric_data':
-      // atmospheric data has multiple variables and multiple statistics per variable
-      dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.variable + '_' + this.selectedFilters.statistic;
-      break;      
+        // atmospheric data has multiple variables and multiple statistics per variable
+        dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.variable + '_' + this.selectedFilters.statistic;
+        break;      
       default:
-      dataId = '';
-      break;
+        dataId = '';
+        break;
     }
+    console.log('Data ID:', dataId);
     this.fetchImages(this.selectedFilters.city, this.selectedFilters.service, dataId);
     // uncomment to switch between images and timeseries
     // if (this.selectedFilters.frequency === 'monthly') {
