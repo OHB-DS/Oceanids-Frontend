@@ -29,7 +29,8 @@
               "@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss",
               "./node_modules/leaflet/dist/leaflet.css",
-              "./node_modules/leaflet-draw/dist/leaflet.draw.css"
+              "./node_modules/leaflet-draw/dist/leaflet.draw.css",
+              "node_modules/ngx-spinner/animations/ball-spin-clockwise-fade.css"
             ],
             "scripts": ["node_modules/leaflet/dist/leaflet.js"]
           },
