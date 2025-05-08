@@ -1,0 +1,82 @@
+header {
+    display: flex;
+    align-items: center;
+    padding:0px 0px;
+    background-color: rgb(0, 62, 97);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+.ohblogo {
+  cursor: pointer;
+}
+.ohblogo img {
+    width:  140px;
+    height: 60px;
+}
+
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Ensures spacing between logo and button */
+  }
+
+
+  /* Right Section (Login Button) */
+.header-right {
+  margin-left: auto; /* Pushes the login button to the right */
+  margin-right: 10px;
+}
+
+.line{
+  height: 10px;
+  width: 100%;
+  background-color: rgb(96, 154, 181);
+}
+
+.toplevelbutton {
+  background-color: rgb(0, 62, 97);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 22px;
+}
+.toplevelbutton:hover {
+background-color: rgb(96, 154, 181);
+color: white;
+}
+
+/* List Styling */
+.selection-list {
+  display: none; /* Initially hidden */
+  position: absolute; /* Positioning the list below the button */
+  top: 55px; /* Position the list directly below the button */
+  left: 160px;
+  background-color: rgb(0, 62, 97);
+  /* background-color: rgb(255, 255, 255); */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 200px; /* Fixed width */
+  z-index: 1000; /* Ensure it appears above other content */
+}
+
+/* Styling for each list item */
+.selection-list li {
+  padding: 10px;
+  cursor: pointer;
+  color: white;
+}
+
+.selection-list li:hover {
+  background-color: rgb(96, 154, 181);
+  color: white;
+}
+.toplevelbutton:hover + .selection-list,
+.selection-list:hover {
+  display: block;
+}
