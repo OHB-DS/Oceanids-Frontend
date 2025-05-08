@@ -1,26 +1,25 @@
 header {
+    flex-shrink: 0;
     display: flex;
+    height: 6vh;
     align-items: center;
-    padding:0px 0px;
     background-color: rgb(0, 62, 97);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
 
 .ohblogo {
   cursor: pointer;
+  margin-left: 10%;
 }
 .ohblogo img {
-    width:  140px;
-    height: 60px;
+  max-width:  140px;
 }
-
 
 .header-left {
     display: flex;
     align-items: center;
     gap: 10px; /* Ensures spacing between logo and button */
   }
-
 
   /* Right Section (Login Button) */
 .header-right {
@@ -35,24 +34,24 @@ header {
 }
 
 .toplevelbutton {
+  cursor: pointer;
   background-color: rgb(0, 62, 97);
   color: white;
   border: none;
   padding: 8px 15px;
-  cursor: pointer;
   border-radius: 5px;
-  font-size: 22px;
+  font-size: 2vh;
 }
 .toplevelbutton:hover {
-background-color: rgb(96, 154, 181);
-color: white;
+  background-color: rgb(96, 154, 181);
+  color: white;
 }
 
 /* List Styling */
 .selection-list {
   display: none; /* Initially hidden */
   position: absolute; /* Positioning the list below the button */
-  top: 55px; /* Position the list directly below the button */
+  top: 7%; /* Position the list directly below the button */
   left: 160px;
   background-color: rgb(0, 62, 97);
   /* background-color: rgb(255, 255, 255); */

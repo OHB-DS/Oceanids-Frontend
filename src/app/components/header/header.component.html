@@ -1,24 +1,24 @@
-
 <header>
 
     <div class="header-left">
-    <a (click)="navigateTo('')" class="ohblogo">
-      <img src="assets/images/ohb_logo_white_dummy.png" alt="Logo" />
-    </a>
-
-    <button class="toplevelbutton">Use Cases</button>
-    <!-- List that appears below the button -->
-    <ul class="selection-list">
-      <li (click)="navigateTo('vegetation-service')">Urban Vegetation Service</li>
-      <li (click)="navigateTo('heat-service')">Urban Heat Service</li>
-    </ul>
-    <button class="toplevelbutton">Documentation</button>
-    <button class="toplevelbutton">Contact us</button>
-
-
+      <a class="ohblogo" href="https://www.oceanids-project.eu/" target="_blank" rel="noopener noreferrer">
+        <img src="./assets/icons/oceanids_logo official.png" alt="ESA Logo" />
+      </a>
+      <div style="text-align: center; color: white; font-weight: bold; font-size: 2vh; font-family: Arial, sans-serif; position:fixed; width:100%; justify-content: center;">
+        <span style="text-align: center;">OCEANIDS Platform (beta)</span>
+      </div>
+      <!-- <button class="toplevelbutton">Use Cases</button>
+      <ul class="selection-list">
+        <li (click)="navigateTo('vegetation-service')">Urban Vegetation Service</li>
+        <li (click)="navigateTo('heat-service')">Urban Heat Service</li>
+      </ul>
+      <button class="toplevelbutton">Documentation</button>
+      <button class="toplevelbutton">Contact us</button> -->
     </div>
     <div class="header-right">
-      <button class="toplevelbutton">Login</button>
+      <div style="padding: 10px;"> <!-- Add padding around the button -->
+        <button class="toplevelbutton">Login</button>
+      </div>
     </div>
 
 </header>
