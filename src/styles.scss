@@ -36,35 +36,52 @@ body {
 }
 
 .info {
-    background-color: rgba(64, 64, 64, 0.9); /* Darker grey background with more transparency */
-    padding: 12px; /* Increased padding for better spacing */
+    background-color: rgba(64, 64, 64, 0.9);
+    /* Darker grey background with more transparency */
+    padding: 12px;
+    /* Increased padding for better spacing */
     border-radius: 5px;
-    border: 2px solid black; /* Black frame */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Slightly darker shadow */
-    font-size: 16px; /* Increased font size */
+    border: 2px solid black;
+    /* Black frame */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    /* Slightly darker shadow */
+    font-size: 16px;
+    /* Increased font size */
     right: 10px;
 }
 
 .legend i {
-    width: 15px; /* Increased width of symbols */
-    height: 15px; /* Increased height of symbols */
-    border-radius: 4px; /* Adjusted for larger symbols */
-    margin-right: 12px; /* Increased spacing between symbols and text */
+    width: 15px;
+    /* Increased width of symbols */
+    height: 15px;
+    /* Increased height of symbols */
+    border-radius: 4px;
+    /* Adjusted for larger symbols */
+    margin-right: 12px;
+    /* Increased spacing between symbols and text */
     display: inline-block;
 }
 
 .legend-title {
-    font-size: 16px; /* Increased font size for the title */
-    font-weight: bold; /* Made the title bold */
-    margin-bottom: 10px; /* Added spacing below the title */
-    text-align: center; /* Center-align the title */
-    color: white; /* Changed title color to white */
+    font-size: 16px;
+    /* Increased font size for the title */
+    font-weight: bold;
+    /* Made the title bold */
+    margin-bottom: 10px;
+    /* Added spacing below the title */
+    text-align: center;
+    /* Center-align the title */
+    color: white;
+    /* Changed title color to white */
 }
 
 .legend-label {
-    font-size: 16px; /* Increased font size for labels */
-    line-height: 1.5; /* Improved line spacing */
-    color: white; /* Changed label color to white */
+    font-size: 16px;
+    /* Increased font size for labels */
+    line-height: 1.5;
+    /* Improved line spacing */
+    color: white;
+    /* Changed label color to white */
 }
 
 .custom-form-field .mat-form-field-wrapper {
@@ -83,4 +100,29 @@ body {
 
 ngx-charts-legend {
     display: block !important;
+}
+
+.custom-tooltip-polygon {
+    position: absolute;
+    background-color: #ffffcc;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    white-space: normal;
+    word-wrap: break-word;
+    max-width: 200px;
+    text-align: center;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: -10px;
+        transform: translateY(-50%);
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        border-left: 6px solid #ffffcc;
+    }
 }
