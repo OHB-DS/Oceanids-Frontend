@@ -13,7 +13,7 @@
     </div>
   </div> -->
 
-  <mat-drawer-container style="height: 100%;">
+  <mat-drawer-container>
     <mat-drawer style="height: fit-content; width: 50vw; margin: 20px;" #chartDrawer position="end" mode="over">
       <button mat-icon-button (click)="closeChartDrawer()" style="position: absolute; top: 10px; right: 10px;">
         <mat-icon>close</mat-icon>
@@ -28,8 +28,8 @@
     </mat-drawer>
 
     <mat-drawer-content style="display: flex; flex-direction: column;">
-      <div class="map-frame" style="flex: 1; position: relative;">
-        <div class="map" id="map" style="height: 100%; display: flex; gap: 20px; flex-wrap: wrap;">
+      <div class="map-frame">
+        <div class="map" id="map">
           <div class="panel-container" style="margin: 20px;">
             <form [formGroup]="cityForm">
               <mat-accordion>

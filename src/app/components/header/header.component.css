@@ -7,6 +7,17 @@ header {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
 
+.header-title {
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  font-size: 2vh;
+  font-family: Arial, sans-serif;
+  position: fixed;
+  width: 100%;
+  justify-content: center;
+}
+
 .ohblogo {
   cursor: pointer;
   margin-left: 10%;
@@ -21,14 +32,13 @@ header {
     gap: 10px; /* Ensures spacing between logo and button */
   }
 
-  /* Right Section (Login Button) */
 .header-right {
   margin-left: auto; /* Pushes the login button to the right */
   margin-right: 10px;
 }
 
 .line{
-  height: 10px;
+  height: 1vh;
   width: 100%;
   background-color: rgb(96, 154, 181);
 }

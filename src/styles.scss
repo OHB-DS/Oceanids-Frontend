@@ -1,20 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
 // @import '~bootstrap/dist/css/bootstrap.css';
 
-
-html,
-body {
+html {
+    width: 100%;
     height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column; /* Stack header, map, and footer vertically */
+    overflow: hidden; /* Prevent vertical scrolling */
 }
 
-html,
 body {
     height: 100%;
-}
-
-body {
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
+    display: flex;
+    flex-direction: column; /* Stack header, map, and footer vertically */
+}
+
+.map {
+    flex: 1; /* Allow the map to take up the remaining space between header and footer */
+    position: relative;
 }
 
 .leaflet-control-container,
@@ -22,17 +29,6 @@ body {
 .leaflet-left {
     // position: absolute;
     top: 40%;
-}
-
-.map {
-    position: relative;
-    width: 100%;
-    height: 100%
-}
-
-.map-frame {
-    height: 100%;
-    border: 2px solid black;
 }
 
 .info {

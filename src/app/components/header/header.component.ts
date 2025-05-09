@@ -13,6 +13,8 @@ export class HeaderComponent {
   navigateTo(route: string) {
     this.router.navigate([route]);
   }
-
+  openLoginPage() {
+    window.open('https://ohbds-identitymanagement-dev.azurewebsites.net/realms/OCEANIDS_TEST/account', '_blank');
+  }
 }
 

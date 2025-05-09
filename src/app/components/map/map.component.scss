@@ -1,3 +1,20 @@
+.map {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    position: relative;
+    height: calc(100vh - 11.5vh); /* Subtract header (6vh) line (1vh) and footer (4vh) heights */
+}
+
+.map-frame {
+    height: 100%;
+    border: 2px solid black;
+    display: flex; 
+    gap: 20px; 
+}
+
 .image {
   position: absolute;
   right: 0;
@@ -73,12 +90,6 @@ mat-drawer {
   display: flex;
   height: fit-content;
   max-height: 100vh;
-}
-
-.map {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
 }
 
 .checkbox-label {
