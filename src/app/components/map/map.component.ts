@@ -1,21 +1,20 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as L from 'leaflet';
 import { MapService } from 'src/app/services/map.service';
 import { CityService } from 'src/app/services/city.service';
 import 'leaflet-draw'
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CityArea } from 'src/app/shared/models/CityArea';
 import { MatDrawer } from '@angular/material/sidenav';
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { Series, Timeseries } from 'src/app/shared/models/Timeseries';
 import { GeojsonLayerService } from 'src/app/services/geojson-layer.service';
-import { concatMap, forkJoin, map, Observable, of, startWith, switchMap, tap } from 'rxjs';
+import { concatMap, forkJoin, of, switchMap, tap } from 'rxjs';
 import { defaultValueForSerivces, defaultValueForTimeseries, serviceDescriptions, chartDescriptions } from 'src/app/shared/desctiptions/service-desctiptions';
 import { saveAs } from 'file-saver';
 import { chartFilter } from 'src/app/shared/models/ChartFilter';
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 import { DescriptionSnackbarComponent } from 'src/app/shared/components/description-snackbar/description-snackbar.component';
-import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-map',
@@ -33,11 +32,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('chartDrawer') chartDrawer!: MatDrawer;
   @ViewChild('citiesPanel') citiesPanel!: MatExpansionPanel;
   @ViewChild('dataServicesPanel') dataServicesPanel!: MatExpansionPanel;
-  // @ViewChild(MatAutocompleteTrigger) trigger!: MatAutocompleteTrigger;
-
   @Input() downloadButtonPressed!: boolean;
-  activeTabs: { [key: string]: string[] } = {};
-
   cityServices: { [city: string]: Set<string> } = {};
   timeseries: Timeseries;
   selectedServiceDescription: string = '';
@@ -58,7 +53,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       service: this.fb.array([], Validators.required)
     });
     this.timeseries = { transectId: '', service: '', name: '', series: [] };
-  }
+  } 
 
   ngOnDestroy(): void {
     this.map?.off();
@@ -80,12 +75,14 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       const citiesLayer = L.layerGroup();
       //@ts-ignore
       const cityNames = data.sites;
+
       cityNames.forEach((cityName: string) => {
         //@ts-ignore
         const cityAOI = data.AOIs[cityName];
         this.cityNames.push(cityName);
         const geoJsonLayer = L.geoJSON(cityAOI, {
           onEachFeature: (feature, layer) => {
+
             // store the popup for the city
             const bounds = (layer as L.Polygon).getBounds();
             const center = bounds.getCenter();
@@ -94,10 +91,12 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
               .setContent(cityName)
               .addTo(this.map!);
             this.cityPopups[cityName] = popup;
+
             // select city when clicked
             layer.on('click', () => {
               this.selectCity(cityName, layer, popup);
             });
+
             // highlight the polygon on mouseover and mouseout
             layer.on('mouseover', function () {
               (layer as L.Path).setStyle({ weight: 5 });
@@ -114,6 +113,16 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       //@ts-ignore
       citiesLayer.options.type = 'citiesArea';
       citiesLayer.addTo(this.drawnItems!);
+      // add zoom event listener to make popups reappear when zooming out
+      // this.map!.on('zoomend', () => {
+      //   if (this.map!.getZoom() <= 7) {
+      //     Object.values(this.cityPopups).forEach(popup => {
+      //       if (!this.map!.hasLayer(popup)) {
+      //         popup.addTo(this.map!);
+      //       }
+      //     });
+      //   }
+      // });
     });
 
     // listen for changes in the city selection
@@ -124,16 +133,17 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         this.selectCity(cityName, layer, popup);
       }
     });
+
     // listen for changes in the service selection
     this.cityForm.get('city')?.valueChanges.pipe(
       concatMap(city => {
         this.cityDataServices = []
         return forkJoin([
-          //TODO: why is this null?
           of(null),
           this.fetchAvailableServices(city)
         ]);
       })
+
     ).subscribe(() => {
       this.onCityChange();
     });
@@ -152,131 +162,62 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       this.processCustomGroundMotionPolygon(geoJSONGroundMotion, service, this.cityForm.get("city")?.value);
     });
   }
-
-
-  // private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined): void {
-  //   // restore the previously selected polygon to its default state
-  //   console.log(layer)
-  //   if (this.selectedPolygon) {
-  //     (this.selectedPolygon as L.Path).setStyle({ fillOpacity: 0.2, color: '#3388ff' }); // default Leaflet style
-  //     this.selectedPolygon.on('mouseover', () => {
-  //       (this.selectedPolygon as L.Path).setStyle({ weight: 5 });
-  //     });
-  //     this.selectedPolygon.on('mouseout', () => {
-  //       (this.selectedPolygon as L.Path).setStyle({ weight: 3 });
-  //     });
-  //     this.selectedPolygon.on('click', () => {
-  //       const previousCityName = (this.selectedPolygon as any).cityName;
-  //       const previousPopup = this.cityPopups[previousCityName];
-  //       this.selectCity(previousCityName, this.selectedPolygon!, previousPopup);
-  //     });
-  //   }
-
-  //   // update the selected polygon
-  //   this.selectedPolygon = layer;
-
-  //   // remove the click, mouseover, and mouseout event listeners
-  //   layer.off('click');
-  //   layer.off('mouseover');
-  //   layer.off('mouseout');
-
-  //   // reattach the click, mouseover, and mouseout event listeners to the current polygon
-  //   layer.on('click', () => {
-  //     this.selectCity(cityName, layer, popup);
-  //   });
-  //   layer.on('mouseover', () => {
-  //     (layer as L.Path).setStyle({ weight: 5 });
-  //   });
-  //   layer.on('mouseout', () => {
-  //     (layer as L.Path).setStyle({ weight: 3 });
-  //   });
-
-  //   // set the style to make it transparent so other layers are visible inside
-  //   (layer as L.Path).setStyle({ fillOpacity: 0, color: 'yellow' });
-
-  //   // fly to the selected city's bounds
-  //   const bounds = (layer as L.Polygon).getBounds();
-  //   const center = bounds.getCenter();
-  //   const zoom = this.map!.getBoundsZoom(bounds) - 1; // calculate the appropriate zoom level for the bounds
-  //   this.map!.flyTo(center, zoom); // fly to the center with the calculated zoom level
-
-  //   // fetch and display data services for the selected city
-  //   this.cityDataServices = [];
-  //   this.fetchAvailableServices(cityName).subscribe(() => {
-  //     this.onCityChange();
-  //   });
-
-  //   // explicitly update the cityForm value to ensure valueChanges is triggered
-  //   if (this.cityForm.get('city')?.value !== cityName) {
-  //     this.cityForm.get('city')?.patchValue(cityName);
-  //   }
-  // }
-  private lastSelectedLayer: L.Layer | null = null;
-
   private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined): void {
-    console.log('select')
-    if (this.lastSelectedLayer && this.lastSelectedLayer !== layer) {
-      (this.lastSelectedLayer as L.Path).setStyle({
-        fillOpacity: 0.2,
-        color: '#3388ff',
-        weight: 3
+    // restore the previously selected polygon to its default state
+    if (this.selectedPolygon) {
+      (this.selectedPolygon as L.Path).setStyle({ fillOpacity: 0.2, color: '#3388ff' }); // default Leaflet style
+      this.selectedPolygon.on('mouseover', () => {
+        (this.selectedPolygon as L.Path).setStyle({ weight: 5 });
       });
-
-      this.lastSelectedLayer.off('mouseover');
-      this.lastSelectedLayer.off('mouseout');
-      this.lastSelectedLayer.on('mouseover', () => {
-        (this.lastSelectedLayer as L.Path).setStyle({ weight: 5 });
+      this.selectedPolygon.on('mouseout', () => {
+        (this.selectedPolygon as L.Path).setStyle({ weight: 3 });
       });
-      this.lastSelectedLayer.on('mouseout', () => {
-        (this.lastSelectedLayer as L.Path).setStyle({ weight: 3 });
+      this.selectedPolygon.on('click', () => {
+        const previousCityName = (this.selectedPolygon as any).cityName;
+        const previousPopup = this.cityPopups[previousCityName];
+        this.selectCity(previousCityName, this.selectedPolygon!, previousPopup);
       });
     }
 
+    // update the selected polygon
+    this.selectedPolygon = layer;
 
-    this.lastSelectedLayer = layer;
+    // remove the click, mouseover, and mouseout event listeners
+    layer.off('click');
+    layer.off('mouseover');
+    layer.off('mouseout');
 
-
-    layer.off();
-
-
-    (layer as L.Path).setStyle({
-      fillOpacity: 0,
-      color: 'yellow',
-      weight: 3
+    // reattach the click, mouseover, and mouseout event listeners to the current polygon
+    layer.on('click', () => {
+      this.selectCity(cityName, layer, popup);
     });
-
     layer.on('mouseover', () => {
       (layer as L.Path).setStyle({ weight: 5 });
     });
-
     layer.on('mouseout', () => {
       (layer as L.Path).setStyle({ weight: 3 });
     });
 
-    layer.on('click', () => {
-      if (this.cityForm.get('city')?.value !== cityName) {
-        this.selectCity(cityName, layer, popup);
-      }
-    });
+    // set the style to make it transparent so other layers are visible inside
+    (layer as L.Path).setStyle({ fillOpacity: 0, color: 'yellow' });
 
-
+    // fly to the selected city's bounds
     const bounds = (layer as L.Polygon).getBounds();
     const center = bounds.getCenter();
-    const zoom = this.map!.getBoundsZoom(bounds) - 1;
-    this.map!.flyTo(center, zoom);
+    const zoom = this.map!.getBoundsZoom(bounds) - 1; // calculate the appropriate zoom level for the bounds
+    this.map!.flyTo(center, zoom); // fly to the center with the calculated zoom level
 
-
+    // fetch and display data services for the selected city
     this.cityDataServices = [];
     this.fetchAvailableServices(cityName).subscribe(() => {
       this.onCityChange();
     });
 
+    // explicitly update the cityForm value to ensure valueChanges is triggered
     if (this.cityForm.get('city')?.value !== cityName) {
       this.cityForm.get('city')?.patchValue(cityName);
     }
   }
-
-
   downloadTimeseriesCsv() {
     const city = this.timeseries.name;
     const service = this.timeseries.service;
@@ -370,18 +311,12 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
                 baseLine: this.cityService.getGeoJson(service, this.cityForm.get('city')?.value, defaultValueForSerivces[service + '_baseline'])
               })
             }
-            else if (service === 'ground_motion') {
+            if (service === 'ground_motion') {
               return forkJoin({
                 geoJsonData: of(geoJsonData),
                 points: this.cityService.getGeoJson(service, this.cityForm.get('city')?.value, defaultValueForSerivces[service + '_points'])
               })
             }
-            // else if (service === 'atmospheric_data') {
-            //   return forkJoin({
-            //     geoJsonData: of(geoJsonData),
-            //     services: this.cityService.getActiveServicesForCity(this.cityForm.get('city')?.value, service)
-            //   })
-            // }
             return of(geoJsonData);
           })
         ).subscribe((result: any) => {
@@ -405,29 +340,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
               this.geoJsonService.addGeoJsonGroundMotionLayer(result.geoJsonData, result.points, service, this.cityForm.get('city')?.value, this.drawnItems!, this, this.map!);
               // add drawing toolbox
               this.map?.addControl(this.mapService.drawToolbar(this.drawnItems!, true));
-              setTimeout(() => {
-                const polygonButton = document.querySelector('.leaflet-draw-draw-polygon') as HTMLElement;
-                const mapContainer = document.querySelector('.leaflet-container') as HTMLElement;
-
-                if (polygonButton && mapContainer) {
-                  const hint = document.createElement('div');
-                  hint.className = 'custom-tooltip-polygon';
-                  hint.innerText = 'Draw a new polygon to show ground motion displacements elsewhere';
-
-                  mapContainer.appendChild(hint);
-
-                  const rect = polygonButton.getBoundingClientRect();
-                  const mapRect = mapContainer.getBoundingClientRect();
-
-                  hint.style.position = 'absolute';
-                  hint.style.top = `${rect.top - mapRect.top - 25}px`;
-                  hint.style.left = `${rect.left - mapRect.left - 250}px`;
-
-                  setTimeout(() => {
-                    hint.remove();
-                  }, 2500);
-                }
-              }, 100);
               break;
 
             case 'wave_climate':
@@ -438,17 +350,16 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
               // add points
               this.geoJsonService.addGeoJsonWavesOrSeaLevelorAtmosphericLayer(result, service, this.cityForm.get('city')?.value, this.drawnItems!, this, this.map!);
               break;
-            case 'atmospheric_data':
-              // add points
-              this.geoJsonService.addGeoJsonWavesOrSeaLevelorAtmosphericLayer(result, service, this.cityForm.get('city')?.value, this.drawnItems!, this, this.map!);
-
-              break;
+              case 'atmospheric_data':
+                // add points
+                this.geoJsonService.addGeoJsonWavesOrSeaLevelorAtmosphericLayer(result, service, this.cityForm.get('city')?.value, this.drawnItems!, this, this.map!);
+                break;
             default:
               break;
           }
 
         });
-        // if checkbox is unchecked
+      // if checkbox is unchecked
       } else {
         const index = serviceArray.controls.findIndex(x => x.value.name === service);
         if (index !== -1) {
@@ -507,20 +418,29 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     switch (this.selectedFilters.service) {
       case 'sea_level':
         // sea level has multiple models (CMCC-CM2-VHR4 and EC-Earth3P-HR), so needs model keyword
-        dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.model + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
+        if (this.selectedFilters.frequency === 'extremes') {
+          dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.model + '_' + this.selectedFilters.frequency;
+        } else {
+          dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.model + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
+        }
         break;
       case 'wave_climate':
         // wave climate has only one model, so no model keyword
-        dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
+        if (this.selectedFilters.frequency === 'extremes') {
+          dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.frequency;
+        } else {
+          dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
+        }
         break;
       case 'atmospheric_data':
         // atmospheric data has multiple variables and multiple statistics per variable
         dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.variable + '_' + this.selectedFilters.statistic;
-        break;
+        break;      
       default:
         dataId = '';
         break;
     }
+    console.log('Data ID:', dataId);
     this.fetchImages(this.selectedFilters.city, this.selectedFilters.service, dataId);
     // uncomment to switch between images and timeseries
     // if (this.selectedFilters.frequency === 'monthly') {
@@ -545,13 +465,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     switch (service) {
       case 'coastal_change':
         dataId = geomId;
-        this.fetchImages(city, service, dataId);
-
         break;
       case 'ground_motion':
         dataId = geomId;
-        this.fetchImages(city, service, dataId);
-
         break;
       case 'wave_climate':
         this.selectedFilters.city = city;
@@ -561,8 +477,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         this.selectedFilters.timeRange = 'historical';
         this.selectedFilters.frequency = 'hourly';
         dataId = this.selectedFilters.site + '_' + service + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
-        this.fetchImages(city, service, dataId);
-
         break;
       case 'sea_level':
         this.selectedFilters.city = city;
@@ -573,33 +487,16 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         this.selectedFilters.timeRange = 'historical';
         this.selectedFilters.frequency = 'hourly';
         dataId = this.selectedFilters.site + '_' + service + '_' + this.selectedFilters.model + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
-        this.fetchImages(city, service, dataId);
-
         break;
-      case 'atmospheric_data':
-        //@ts-ignore
-        this.cityService.getActiveServicesForCity(layer.feature.properties.site, service).subscribe((result: any) => {
-          this.activeTabs = result;
-          console.log(this.activeTabs)
+        case 'atmospheric_data':
           this.selectedFilters.city = city;
           this.selectedFilters.service = service;
           //@ts-ignore
           this.selectedFilters.site = layer.feature.properties.site;
-          const availableVariables = Object.keys(this.activeTabs);
-          if (availableVariables.length > 0) {
-            const firstVariable = availableVariables[0];
-            const stats = this.activeTabs[firstVariable];
-
-            if (stats && stats.length > 0) {
-              this.selectedFilters.variable = firstVariable;
-              this.selectedFilters.statistic = stats[0];
-            }
-          }
+          this.selectedFilters.variable = 'air_temperature';
+          this.selectedFilters.statistic = 'daily_max';
           dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.variable + '_' + this.selectedFilters.statistic;
-          this.fetchImages(city, service, dataId);
-
-        })
-        break;
+          break;
       default:
         break;
     }
@@ -610,7 +507,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       name: city,
       series: [] // Optionally populate this with actual data if available
     };
-    //this.fetchImages(city, service, dataId);
+    this.fetchImages(city, service, dataId);
   }
   private fetchTimeseries(city: string, service: string, dataId: string) {
     this.cityService.getTimeseriesJson(city, service, dataId)
