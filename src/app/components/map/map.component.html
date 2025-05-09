@@ -1,17 +1,8 @@
 <div style="display: flex; height: 100vh; flex-direction: column;">
 
-  <!-- <div style="background-color: #003366; color: white; padding: 5px; height: 40px;">
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-      <div style="display: flex; align-items: center;">
-        <img src="assets/icons/eu_logo.png" alt="EU Logo" style="height: 30px; margin-right: 10px;">
-        <img src="assets/icons/oceanids_logo official.png" alt="Oceanids Logo" style="height: 30px; margin-right: 10px;">
-      </div>
-      <h2 style="margin: 0; text-align: center; flex-grow: 1;">Oceanids Platform</h2>
-      <h5 style="margin: 0; text-align: right;">
-        Project funded from the EU HE research and innovation programme under GA No. 101112919
-      </h5>
-    </div>
-  </div> -->
+  <div style="background-color: #003366; color: white; padding: 5px; height: 30px;">
+    <h2 align="center">OCEANIDS Platform</h2>
+  </div>
 
   <mat-drawer-container style="height: 100%;">
     <mat-drawer style="height: fit-content; width: 50vw; margin: 20px;" #chartDrawer position="end" mode="over">
@@ -21,9 +12,8 @@
       <div style="display: flex; flex-direction: column;height: fit-content;">
         <app-line-chart *ngIf="timeseries" [multi]="[timeseries]" [dataServiceName]="titleTimeseries"
           [description]="selectedServiceDescription" (downloadCsvButtonClicked)="downloadTimeseriesCsv()"
-          (downloadJpgButtonClicked)="downloadTimeseriesJpg()"
-          [selectedFilters]="selectedFilters" (filterChange)="onFilterChange($event)"
-          [chartImage]="chartImage"></app-line-chart>
+          (downloadJpgButtonClicked)="downloadTimeseriesJpg()" [selectedFilters]="selectedFilters"
+          [activeTabs]="activeTabs" (filterChange)="onFilterChange($event)" [chartImage]="chartImage"></app-line-chart>
       </div>
     </mat-drawer>
 
@@ -32,7 +22,7 @@
         <div class="map" id="map" style="height: 100%; display: flex; gap: 20px; flex-wrap: wrap;">
           <div class="panel-container" style="margin: 20px;">
             <form [formGroup]="cityForm">
-              <mat-accordion>
+              <mat-accordion (dblclick)="$event.stopPropagation()">
                 <mat-expansion-panel #citiesPanel>
                   <mat-expansion-panel-header>
                     <mat-panel-title>
@@ -40,19 +30,13 @@
                     </mat-panel-title>
                   </mat-expansion-panel-header>
                   <mat-panel-description>
-                    <!-- <mat-radio-group formControlName="city">
-                      <div style="display: flex; flex-direction: column; max-height: 200px; overflow-y: auto;">
-                        <mat-radio-button *ngFor="let city of cityNames" [value]="city">
-                          {{ city }}
-                        </mat-radio-button>
-                      </div>
-                    </mat-radio-group> -->
                     <mat-form-field>
                       <mat-label>Select City</mat-label>
                       <mat-select formControlName="city">
                         <mat-option *ngFor="let city of cityNames" [value]="city">
                           {{ city }}
                         </mat-option>
+
                       </mat-select>
                     </mat-form-field>
                   </mat-panel-description>

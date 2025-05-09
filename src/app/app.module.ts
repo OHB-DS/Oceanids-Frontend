@@ -39,8 +39,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { DescriptionSnackbarComponent } from './shared/components/description-snackbar/description-snackbar.component';
 import { SpinnerInterceptor } from './shared/interceptor/spinner-interceptor';
 import { NgxSpinnerModule } from 'ngx-spinner';
-import { HeaderComponent } from './components/header/header.component';
-import { FooterComponent } from './components/footer/footer.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 // function initializeKeycloak(keycloak: KeycloakService) {
 //   return () =>
@@ -105,8 +104,7 @@ import { FooterComponent } from './components/footer/footer.component';
     NgxChartsModule,
     LineChartModule,
     MatButtonToggleModule,
-    HeaderComponent,
-    FooterComponent
+    MatAutocompleteModule
   ],
   providers: [
 
