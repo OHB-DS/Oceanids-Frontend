@@ -34,19 +34,33 @@
         </div>
     </div>
     <div *ngIf="dataServiceName === 'atmospheric_data'">
-        <mat-button-toggle-group [value]="selectedFilters.variable" style="display: flex;justify-content: center;"
-            (change)="updateFilter('variable', $event.value)">
-            <mat-button-toggle value="air_temperature">Air Temperature</mat-button-toggle>
-            <mat-button-toggle value="wind_gusts">Wind Gusts</mat-button-toggle>
-            <mat-button-toggle value="wind_speed">Wind Speed</mat-button-toggle>
-            <mat-button-toggle value="relative_humidity">Relative Humidity</mat-button-toggle>
-            <mat-button-toggle value="total_precipitation">Total Precipitation</mat-button-toggle>
+        <mat-button-toggle-group [value]="selectedFilters.variable"  (change)="updateFilter('variable', $event.value)" style="display: flex; justify-content: center;">
+            <mat-button-toggle value="air_temperature" [disabled]="!activeTabs['air_temperature']">Air
+                Temperature
+            </mat-button-toggle>
+            <mat-button-toggle value="wind_gusts" [disabled]="!activeTabs['wind_gusts']">
+                Wind Gusts
+            </mat-button-toggle>
+            <mat-button-toggle value="wind_speed" [disabled]="!activeTabs['wind_speed']">
+                Wind Speed
+            </mat-button-toggle>
+            <mat-button-toggle value="relative_humidity" [disabled]="!activeTabs['relative_humidity']">
+                Relative Humidity
+            </mat-button-toggle>
+            <mat-button-toggle value="total_precipitation" [disabled]="!activeTabs['total_precipitation']">
+                Total Precipitation
+            </mat-button-toggle>
         </mat-button-toggle-group>
-        <mat-button-toggle-group [value]="selectedFilters.statistic" (change)="updateFilter('statistic', $event.value)"
-            style="display: flex;justify-content: center;">
-            <mat-button-toggle value="daily_max">Daily Maximum</mat-button-toggle>
-            <mat-button-toggle value="daily_min">Daily Minimum</mat-button-toggle>
-            <mat-button-toggle value="daily_sum">Daily Sum</mat-button-toggle>
+        <mat-button-toggle-group [value]="selectedFilters.statistic" (change)="updateFilter('statistic', $event.value)" style="display: flex; justify-content: center;">
+            <mat-button-toggle value="daily_min" [disabled]="!isTabEnabled(selectedFilters.variable, 'daily_min')">
+                Daily Minimum
+            </mat-button-toggle>
+            <mat-button-toggle value="daily_max" [disabled]="!isTabEnabled(selectedFilters.variable, 'daily_max')">
+                Daily Maximum
+            </mat-button-toggle>
+            <mat-button-toggle value="daily_sum" [disabled]="!isTabEnabled(selectedFilters.variable, 'daily_sum')">
+                Daily Sum
+            </mat-button-toggle>
         </mat-button-toggle-group>
     </div>
     <!-- <ngx-charts-line-chart
@@ -60,6 +74,8 @@
         <button mat-raised-button color="primary" (click)="downloadCsv()" *ngIf="selectedFilters.frequency !== 'climatology'">
             Download CSV
         </button>
-        <button mat-raised-button color="accent" (click)="downloadJpg()">Download JPG</button>
+        <button mat-raised-button color="accent" (click)="downloadJpg()">
+            Download JPG
+        </button>
     </div>
 </div>

@@ -1,20 +1,21 @@
-import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import * as L from 'leaflet';
 import { MapService } from 'src/app/services/map.service';
 import { CityService } from 'src/app/services/city.service';
 import 'leaflet-draw'
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CityArea } from 'src/app/shared/models/CityArea';
 import { MatDrawer } from '@angular/material/sidenav';
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { Series, Timeseries } from 'src/app/shared/models/Timeseries';
 import { GeojsonLayerService } from 'src/app/services/geojson-layer.service';
-import { concatMap, forkJoin, of, switchMap, tap } from 'rxjs';
+import { concatMap, forkJoin, map, Observable, of, startWith, switchMap, tap } from 'rxjs';
 import { defaultValueForSerivces, defaultValueForTimeseries, serviceDescriptions, chartDescriptions } from 'src/app/shared/desctiptions/service-desctiptions';
 import { saveAs } from 'file-saver';
 import { chartFilter } from 'src/app/shared/models/ChartFilter';
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 import { DescriptionSnackbarComponent } from 'src/app/shared/components/description-snackbar/description-snackbar.component';
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-map',
@@ -33,11 +34,13 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('citiesPanel') citiesPanel!: MatExpansionPanel;
   @ViewChild('dataServicesPanel') dataServicesPanel!: MatExpansionPanel;
   @Input() downloadButtonPressed!: boolean;
+  activeTabs: { [key: string]: string[] } = {};
   cityServices: { [city: string]: Set<string> } = {};
   timeseries: Timeseries;
   selectedServiceDescription: string = '';
   titleTimeseries: string = '';
   private selectedPolygon: L.Layer | null = null; // track the currently selected polygon
+  private lastSelectedLayer: L.Layer | null = null;
   private cityPopups: { [cityName: string]: L.Popup } = {};
 
   constructor(
@@ -113,16 +116,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       //@ts-ignore
       citiesLayer.options.type = 'citiesArea';
       citiesLayer.addTo(this.drawnItems!);
-      // add zoom event listener to make popups reappear when zooming out
-      // this.map!.on('zoomend', () => {
-      //   if (this.map!.getZoom() <= 7) {
-      //     Object.values(this.cityPopups).forEach(popup => {
-      //       if (!this.map!.hasLayer(popup)) {
-      //         popup.addTo(this.map!);
-      //       }
-      //     });
-      //   }
-      // });
     });
 
     // listen for changes in the city selection
@@ -139,6 +132,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       concatMap(city => {
         this.cityDataServices = []
         return forkJoin([
+          //todo: why is this null?
           of(null),
           this.fetchAvailableServices(city)
         ]);
@@ -162,34 +156,86 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       this.processCustomGroundMotionPolygon(geoJSONGroundMotion, service, this.cityForm.get("city")?.value);
     });
   }
-  private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined): void {
-    // restore the previously selected polygon to its default state
-    if (this.selectedPolygon) {
-      (this.selectedPolygon as L.Path).setStyle({ fillOpacity: 0.2, color: '#3388ff' }); // default Leaflet style
-      this.selectedPolygon.on('mouseover', () => {
-        (this.selectedPolygon as L.Path).setStyle({ weight: 5 });
+  // private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined): void {
+  //   // restore the previously selected polygon to its default state
+  //   if (this.selectedPolygon) {
+  //     (this.selectedPolygon as L.Path).setStyle({ fillOpacity: 0.2, color: '#3388ff' }); // default Leaflet style
+  //     this.selectedPolygon.on('mouseover', () => {
+  //       (this.selectedPolygon as L.Path).setStyle({ weight: 5 });
+  //     });
+  //     this.selectedPolygon.on('mouseout', () => {
+  //       (this.selectedPolygon as L.Path).setStyle({ weight: 3 });
+  //     });
+  //     this.selectedPolygon.on('click', () => {
+  //       const previousCityName = (this.selectedPolygon as any).cityName;
+  //       const previousPopup = this.cityPopups[previousCityName];
+  //       this.selectCity(previousCityName, this.selectedPolygon!, previousPopup);
+  //     });
+  //   }
+
+  //   // update the selected polygon
+  //   this.selectedPolygon = layer;
+
+  //   // remove the click, mouseover, and mouseout event listeners
+  //   layer.off('click');
+  //   layer.off('mouseover');
+  //   layer.off('mouseout');
+
+  //   // reattach the click, mouseover, and mouseout event listeners to the current polygon
+  //   layer.on('click', () => {
+  //     this.selectCity(cityName, layer, popup);
+  //   });
+  //   layer.on('mouseover', () => {
+  //     (layer as L.Path).setStyle({ weight: 5 });
+  //   });
+  //   layer.on('mouseout', () => {
+  //     (layer as L.Path).setStyle({ weight: 3 });
+  //   });
+
+  //   // set the style to make it transparent so other layers are visible inside
+  //   (layer as L.Path).setStyle({ fillOpacity: 0, color: 'yellow' });
+
+  //   // fly to the selected city's bounds
+  //   const bounds = (layer as L.Polygon).getBounds();
+  //   const center = bounds.getCenter();
+  //   const zoom = this.map!.getBoundsZoom(bounds) - 1; // calculate the appropriate zoom level for the bounds
+  //   this.map!.flyTo(center, zoom); // fly to the center with the calculated zoom level
+
+  //   // fetch and display data services for the selected city
+  //   this.cityDataServices = [];
+  //   this.fetchAvailableServices(cityName).subscribe(() => {
+  //     this.onCityChange();
+  //   });
+
+  //   // explicitly update the cityForm value to ensure valueChanges is triggered
+  //   if (this.cityForm.get('city')?.value !== cityName) {
+  //     this.cityForm.get('city')?.patchValue(cityName);
+  //   }
+  // }
+
+private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined): void {
+    console.log('select')
+    if (this.lastSelectedLayer && this.lastSelectedLayer !== layer) {
+      (this.lastSelectedLayer as L.Path).setStyle({
+        fillOpacity: 0.2,
+        color: '#3388ff',
+        weight: 3
       });
-      this.selectedPolygon.on('mouseout', () => {
-        (this.selectedPolygon as L.Path).setStyle({ weight: 3 });
+      this.lastSelectedLayer.off('mouseover');
+      this.lastSelectedLayer.off('mouseout');
+      this.lastSelectedLayer.on('mouseover', () => {
+        (this.lastSelectedLayer as L.Path).setStyle({ weight: 5 });
       });
-      this.selectedPolygon.on('click', () => {
-        const previousCityName = (this.selectedPolygon as any).cityName;
-        const previousPopup = this.cityPopups[previousCityName];
-        this.selectCity(previousCityName, this.selectedPolygon!, previousPopup);
+      this.lastSelectedLayer.on('mouseout', () => {
+        (this.lastSelectedLayer as L.Path).setStyle({ weight: 3 });
       });
     }
-
-    // update the selected polygon
-    this.selectedPolygon = layer;
-
-    // remove the click, mouseover, and mouseout event listeners
-    layer.off('click');
-    layer.off('mouseover');
-    layer.off('mouseout');
-
-    // reattach the click, mouseover, and mouseout event listeners to the current polygon
-    layer.on('click', () => {
-      this.selectCity(cityName, layer, popup);
+    this.lastSelectedLayer = layer;
+    layer.off();
+    (layer as L.Path).setStyle({
+      fillOpacity: 0,
+      color: 'yellow',
+      weight: 3
     });
     layer.on('mouseover', () => {
       (layer as L.Path).setStyle({ weight: 5 });
@@ -197,27 +243,24 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     layer.on('mouseout', () => {
       (layer as L.Path).setStyle({ weight: 3 });
     });
-
-    // set the style to make it transparent so other layers are visible inside
-    (layer as L.Path).setStyle({ fillOpacity: 0, color: 'yellow' });
-
-    // fly to the selected city's bounds
+    layer.on('click', () => {
+      if (this.cityForm.get('city')?.value !== cityName) {
+        this.selectCity(cityName, layer, popup);
+      }
+    });
     const bounds = (layer as L.Polygon).getBounds();
     const center = bounds.getCenter();
-    const zoom = this.map!.getBoundsZoom(bounds) - 1; // calculate the appropriate zoom level for the bounds
-    this.map!.flyTo(center, zoom); // fly to the center with the calculated zoom level
-
-    // fetch and display data services for the selected city
+    const zoom = this.map!.getBoundsZoom(bounds) - 1;
+    this.map!.flyTo(center, zoom);
     this.cityDataServices = [];
     this.fetchAvailableServices(cityName).subscribe(() => {
       this.onCityChange();
     });
-
-    // explicitly update the cityForm value to ensure valueChanges is triggered
     if (this.cityForm.get('city')?.value !== cityName) {
       this.cityForm.get('city')?.patchValue(cityName);
     }
   }
+
   downloadTimeseriesCsv() {
     const city = this.timeseries.name;
     const service = this.timeseries.service;
@@ -226,6 +269,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       saveAs(res, `${dataId}.csv`);
     });
   }
+
   downloadTimeseriesJpg() {
     const city = this.timeseries.name;
     const service = this.timeseries.service;
@@ -234,9 +278,11 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       saveAs(res, `${dataId}.jpg`);
     });
   }
+
   get serviceFormArray() {
     return this.cityForm.get('service') as FormArray;
   }
+
   fetchAvailableServices(cityName: string) {
     return this.cityService.getServicesForCity(cityName).pipe(
       tap(data => {
@@ -245,6 +291,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     );
   }
+
   findLayerGroupByName(prop: string, name: string) {
     const layers = this.drawnItems!.getLayers()
     //@ts-ignore
@@ -261,20 +308,23 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
   }
+
   findLayerByServicesAndName(city: string, services: any) {
     const layers = this.drawnItems!.getLayers();
     //@ts-ignore
-    const serviceLayer = layers.filter(x => x.options.serviceName === services && x.options.cityName === city);
-
+    const serviceLayer = layers.filter(x => x.options.serviceName === services && x.options.cityName === city)
     return serviceLayer!;
 
   }
+
   closeChartDrawer() {
     this.chartDrawer.close();
   }
+
   openChartDrawer() {
     this.chartDrawer.open();
   }
+  
   onCityChange() {
     this.citiesPanel.close();
     this.dataServicesPanel.open();
@@ -291,6 +341,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
   }
+
   onCheckboxChange(event: any, service: string) {
     const serviceArray = this.cityForm.get('service') as FormArray;
     const city = this.cityForm.get('city')?.value;
@@ -311,7 +362,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
                 baseLine: this.cityService.getGeoJson(service, this.cityForm.get('city')?.value, defaultValueForSerivces[service + '_baseline'])
               })
             }
-            if (service === 'ground_motion') {
+            else if (service === 'ground_motion') {
               return forkJoin({
                 geoJsonData: of(geoJsonData),
                 points: this.cityService.getGeoJson(service, this.cityForm.get('city')?.value, defaultValueForSerivces[service + '_points'])
@@ -340,6 +391,25 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
               this.geoJsonService.addGeoJsonGroundMotionLayer(result.geoJsonData, result.points, service, this.cityForm.get('city')?.value, this.drawnItems!, this, this.map!);
               // add drawing toolbox
               this.map?.addControl(this.mapService.drawToolbar(this.drawnItems!, true));
+              // add pop up indicating how to draw a new polygon
+              setTimeout(() => {
+                const polygonButton = document.querySelector('.leaflet-draw-draw-polygon') as HTMLElement;
+                const mapContainer = document.querySelector('.leaflet-container') as HTMLElement;
+                if (polygonButton && mapContainer) {
+                  const hint = document.createElement('div');
+                  hint.className = 'custom-tooltip-polygon';
+                  hint.innerText = 'Draw a new polygon to show ground motion displacements elsewhere';
+                  mapContainer.appendChild(hint);
+                  const rect = polygonButton.getBoundingClientRect();
+                  const mapRect = mapContainer.getBoundingClientRect();
+                  hint.style.position = 'absolute';
+                  hint.style.top = `${rect.top - mapRect.top - 25}px`;
+                  hint.style.left = `${rect.left - mapRect.left - 250}px`;
+                  setTimeout(() => {
+                    hint.remove();
+                  }, 60000); // remove hint after 60 seconds
+                }
+              }, 100);
               break;
 
             case 'wave_climate':
@@ -368,7 +438,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
           if (service === 'coastal_change') {
             this.hideColorBar();
           }
-          if (service === 'ground_motion') {
+          else if (service === 'ground_motion') {
             this.mapService.removeDrawToolbar();
             this.hideColorBar();
           }
@@ -381,6 +451,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
+
   showInfo(service: any): void {
     const description = serviceDescriptions[service];
     this.snackBar.openFromComponent(DescriptionSnackbarComponent, {
@@ -390,18 +461,21 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       panelClass: ['info-snackbar']
     })
   }
+
   private hideColorBar() {
     const colorBarElement = document.querySelector('.info.legend') as HTMLElement;
     if (colorBarElement) {
       colorBarElement.style.display = 'none';
     }
   }
+
   private showColorBar() {
     const colorBarElement = document.querySelector('.info.legend') as HTMLElement;
     if (colorBarElement) {
       colorBarElement.style.display = 'block';
     }
   }
+
   selectedFilters: chartFilter = {
     city: '',
     service: '',
@@ -412,6 +486,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     variable: '',
     statistic: ''
   };
+
   onFilterChange(updatedFilters: any) {
     this.selectedFilters = { ...this.selectedFilters, ...updatedFilters };
     let dataId = '';
@@ -465,9 +540,11 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     switch (service) {
       case 'coastal_change':
         dataId = geomId;
+        this.fetchImages(city, service, dataId);
         break;
       case 'ground_motion':
         dataId = geomId;
+        this.fetchImages(city, service, dataId);
         break;
       case 'wave_climate':
         this.selectedFilters.city = city;
@@ -477,6 +554,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         this.selectedFilters.timeRange = 'historical';
         this.selectedFilters.frequency = 'hourly';
         dataId = this.selectedFilters.site + '_' + service + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
+        this.fetchImages(city, service, dataId);
         break;
       case 'sea_level':
         this.selectedFilters.city = city;
@@ -487,16 +565,30 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         this.selectedFilters.timeRange = 'historical';
         this.selectedFilters.frequency = 'hourly';
         dataId = this.selectedFilters.site + '_' + service + '_' + this.selectedFilters.model + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
+        this.fetchImages(city, service, dataId);
         break;
-        case 'atmospheric_data':
+      case 'atmospheric_data':
+        //@ts-ignore
+        this.cityService.getActiveServicesForCity(layer.feature.properties.site, service).subscribe((result: any) => {
+          this.activeTabs = result;
+          console.log(this.activeTabs)
           this.selectedFilters.city = city;
           this.selectedFilters.service = service;
           //@ts-ignore
           this.selectedFilters.site = layer.feature.properties.site;
-          this.selectedFilters.variable = 'air_temperature';
-          this.selectedFilters.statistic = 'daily_max';
+          const availableVariables = Object.keys(this.activeTabs);
+          if (availableVariables.length > 0) {
+            const firstVariable = availableVariables[0];
+            const stats = this.activeTabs[firstVariable];
+            if (stats && stats.length > 0) {
+              this.selectedFilters.variable = firstVariable;
+              this.selectedFilters.statistic = stats[0];
+            }
+          }
           dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.variable + '_' + this.selectedFilters.statistic;
-          break;
+          this.fetchImages(city, service, dataId);
+        })
+        break;
       default:
         break;
     }
@@ -507,8 +599,8 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       name: city,
       series: [] // Optionally populate this with actual data if available
     };
-    this.fetchImages(city, service, dataId);
   }
+
   private fetchTimeseries(city: string, service: string, dataId: string) {
     this.cityService.getTimeseriesJson(city, service, dataId)
       .subscribe((timeseries: any) => {
@@ -521,6 +613,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         };
       });
   }
+
   chartImage = ''
   fetchImages(city: string, service: string, dataId: string) {
     this.cityService.getTimeseriesImages(city, service, dataId).subscribe((image: any) => {
@@ -528,6 +621,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       this.chartImage = "data:image/png;base64," + image;
     })
   }
+
   private processCustomGroundMotionPolygon(geoJson: any, service: string, city: string) {
     this.cityService.postCustomGroundMotionPolygon(geoJson, service, city).pipe(
       switchMap(() => {
@@ -545,6 +639,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       this.geoJsonService.addGeoJsonGroundMotionPointLayer(pointData, service, city, this.drawnItems!, this, this.map!);
     });
   }
+
   private fetchTimeSeriesGroundMotion(city: string, service: string, pointId: string) {
     this.cityService.getTimeseriesForGroundMotionPoint(service, city, pointId).subscribe((timeseries: any) => {
       this.chartDrawer.open();

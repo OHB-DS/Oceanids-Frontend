@@ -23,7 +23,8 @@
           [description]="selectedServiceDescription" (downloadCsvButtonClicked)="downloadTimeseriesCsv()"
           (downloadJpgButtonClicked)="downloadTimeseriesJpg()"
           [selectedFilters]="selectedFilters" (filterChange)="onFilterChange($event)"
-          [chartImage]="chartImage"></app-line-chart>
+          [activeTabs]="activeTabs" [chartImage]="chartImage">
+        </app-line-chart>
       </div>
     </mat-drawer>
 
@@ -32,7 +33,7 @@
         <div class="map" id="map">
           <div class="panel-container" style="margin: 20px;">
             <form [formGroup]="cityForm">
-              <mat-accordion>
+              <mat-accordion (dblclick)="$event.stopPropagation()">
                 <mat-expansion-panel #citiesPanel>
                   <mat-expansion-panel-header>
                     <mat-panel-title>
@@ -40,13 +41,6 @@
                     </mat-panel-title>
                   </mat-expansion-panel-header>
                   <mat-panel-description>
-                    <!-- <mat-radio-group formControlName="city">
-                      <div style="display: flex; flex-direction: column; max-height: 200px; overflow-y: auto;">
-                        <mat-radio-button *ngFor="let city of cityNames" [value]="city">
-                          {{ city }}
-                        </mat-radio-button>
-                      </div>
-                    </mat-radio-group> -->
                     <mat-form-field>
                       <mat-label>Select City</mat-label>
                       <mat-select formControlName="city">
@@ -90,8 +84,6 @@
               </mat-accordion>
             </form>
           </div>
-
-
         </div>
       </div>
     </mat-drawer-content>
