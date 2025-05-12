@@ -213,7 +213,6 @@ export class GeojsonLayerService {
     this.addColorBar(map, service);
   }
   addGeoJsonWavesOrSeaLevelorAtmosphericLayer(geoJsonData: any, service: string, city: string, drawnItems: L.FeatureGroup, context: any, map: L.Map) {
-    console.log('geoJsonData:',geoJsonData);
     const layerGroup = L.layerGroup();
     const geoJsonLayer = L.geoJSON(geoJsonData, {
       style: (feature) => {
