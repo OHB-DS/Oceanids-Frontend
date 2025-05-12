@@ -400,11 +400,14 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
                   hint.className = 'custom-tooltip-polygon';
                   hint.innerText = 'Draw a new polygon to show ground motion displacements elsewhere';
                   mapContainer.appendChild(hint);
+                  // place tooltip relative to the drawing button
                   const rect = polygonButton.getBoundingClientRect();
                   const mapRect = mapContainer.getBoundingClientRect();
+                  const relativeTop = ((rect.top - mapRect.top) - (hint.offsetHeight / 2) + (rect.height / 2)) / mapRect.height * 100;
+                  const relativeLeft = (rect.left - mapRect.left) / mapRect.width * 100 - (hint.offsetWidth * 1.15 / mapRect.width * 100);
                   hint.style.position = 'absolute';
-                  hint.style.top = `${rect.top - mapRect.top - 25}px`;
-                  hint.style.left = `${rect.left - mapRect.left - 250}px`;
+                  hint.style.top =  `${relativeTop}%`;
+                  hint.style.left = `${relativeLeft}%`;
                   setTimeout(() => {
                     hint.remove();
                   }, 60000); // remove hint after 60 seconds
@@ -571,7 +574,7 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
         //@ts-ignore
         this.cityService.getActiveServicesForCity(layer.feature.properties.site, service).subscribe((result: any) => {
           this.activeTabs = result;
-          console.log(this.activeTabs)
+          // console.log(this.activeTabs)
           this.selectedFilters.city = city;
           this.selectedFilters.service = service;
           //@ts-ignore
