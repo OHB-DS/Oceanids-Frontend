@@ -92,8 +92,8 @@ export const legendLabels: { [key: string]: string[] } = {
     'ground_motion': ['&le; -10', '-10', '-7.5', '-5', '-3', '-1', '-0.5', '0.5', '1', '3', '5', '7.5', '10', '&ge; 10'],
 }
 export const legendTitle: { [key: string]: string } = {
-    'coastal_change': 'Trend (m / year)',
-    'ground_motion': 'Mean Velocity (mm / year)',
+    'coastal_change': 'Trend<br>(m / year)',
+    'ground_motion': 'Mean Velocity<br>(mm / year)',
 }
 
 export const chartStyles = {

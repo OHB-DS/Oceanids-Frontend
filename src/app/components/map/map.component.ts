@@ -398,9 +398,9 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
                 if (polygonButton && mapContainer) {
                   const hint = document.createElement('div');
                   hint.className = 'custom-tooltip-polygon';
-                  hint.innerText = 'Draw a new polygon to show ground motion displacements elsewhere';
+                  hint.innerText = 'Draw a polygon to show ground motion elsewhere';
                   mapContainer.appendChild(hint);
-                  // place tooltip relative to the drawing button
+                  // place tooltip relative to the drawing button (a bit of calcs to get it right)
                   const rect = polygonButton.getBoundingClientRect();
                   const mapRect = mapContainer.getBoundingClientRect();
                   const relativeTop = ((rect.top - mapRect.top) - (hint.offsetHeight / 2) + (rect.height / 2)) / mapRect.height * 100;

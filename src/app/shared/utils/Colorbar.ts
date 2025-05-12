@@ -3,11 +3,13 @@ import { legendGrades, legendLabels, legendTitle } from 'src/app/shared/desctipt
 export class LegendUtils {
   static generateLegend(service: string): string {
     const grades = legendGrades[service];
+    const grade_min = grades[1];
+    const grade_max = grades[grades.length - 2];
     const labels: string[] = legendLabels[service];
-    let legendHtml = `<h3 align="center" class="legend-title">${legendTitle[service]}</h3>`;
+    let legendHtml = `<p align="center" class="legend-title">${legendTitle[service]}</p>`;
     for (let i = 0; i < grades.length - 1; i++) {
       const from = grades[i];
-      const color = chroma.scale(["red", "white", "blue"]).domain([-3, 3])(from).hex();
+      const color = chroma.scale(["red", "white", "blue"]).domain([grade_min, grade_max])(from).hex();
       if (i === 0) {
         legendHtml += ` <i style="background:${color}"></i> <span class="legend-label">${labels[i]}</span><br>`;
       } else if (i === grades.length - 2) {

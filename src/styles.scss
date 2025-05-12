@@ -33,33 +33,30 @@ body {
 
 .info {
     background-color: rgba(64, 64, 64, 0.9); /* Darker grey background with more transparency */
-    padding: 12px; /* Increased padding for better spacing */
+    padding: 1vh; /* Increased padding for better spacing */
     border-radius: 5px;
-    border: 2px solid black; /* Black frame */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Slightly darker shadow */
-    font-size: 16px; /* Increased font size */
-    right: 10px;
+    border: 0.01vw solid black; /* Black frame */
+    right: 1vw;
 }
 
 .legend i {
-    width: 15px; /* Increased width of symbols */
-    height: 15px; /* Increased height of symbols */
+    width: 1vh; /* Increased width of symbols */
+    height: 1vh; /* Increased height of symbols */
     border-radius: 4px; /* Adjusted for larger symbols */
-    margin-right: 12px; /* Increased spacing between symbols and text */
+    margin-right: 1vh; /* Increased spacing between symbols and text */
     display: inline-block;
 }
 
 .legend-title {
-    font-size: 16px; /* Increased font size for the title */
+    font-size: 1.4vh; /* Increased font size for the title */
     font-weight: bold; /* Made the title bold */
-    margin-bottom: 10px; /* Added spacing below the title */
     text-align: center; /* Center-align the title */
     color: white; /* Changed title color to white */
 }
 
 .legend-label {
-    font-size: 16px; /* Increased font size for labels */
-    line-height: 1.5; /* Improved line spacing */
+    font-size: 1.3vh; /* Increased font size for labels */
+    line-height: 0.13vh; /* Improved line spacing */
     color: white; /* Changed label color to white */
 }
 
@@ -86,12 +83,12 @@ ngx-charts-legend {
     background-color: #ffffcc;
     padding: 8px 12px;
     border-radius: 6px;
-    font-size: 13px;
+    font-size: 1.5vh;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     z-index: 9999;
     white-space: normal;
     word-wrap: break-word;
-    max-width: 200px;
+    max-width: 10vh;
     text-align: center;
 
     &::after {
