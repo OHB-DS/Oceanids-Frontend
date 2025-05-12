@@ -1,40 +1,15 @@
-<!--mat-drawer-container style="height: 100%;">
-    <mat-drawer style="background-color: #fff; width: 25%;" #drawer [mode]="'over'">
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="medium" color="#fff" type="ball-spin-clockwise-fade"
+    [fullScreen]="true"></ngx-spinner>
 
-        <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-            <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
-                <button mat-icon-button *ngIf="treeControl.isExpanded(node)"></button>
-                <button mat-raised-button style="width: 100%; margin: 10px"
-                    (click)="navigatePage(node.name)">{{node.name}}</button>
-            </mat-tree-node>
-        </mat-tree>
-    </mat-drawer>
-    <mat-drawer class="chart-sidenav" #chartDrawer position="end" mode="side">
-        <app-line-chart #chart id="chartId" [isOpened]="chartDrawer.opened"></app-line-chart>
-    </mat-drawer>
-    <mat-drawer-content>
-        <button class="menu-button" style="background-color: #fff;" mat-mini-fab *ngIf="!drawer.opened"
-            (click)="drawer.toggle()"><mat-icon style="color: black;">menu</mat-icon></button>
-        <button class="menu-button" [disabled]="!markerPlaced" [class.disabled]="!markerPlaced"
-            (click)="chartDrawer.toggle();" style="top: 60px;background-color: #fff;" mat-mini-fab><mat-icon
-                style="color: black;">bar_chart</mat-icon>
-        </button>
-       
-        <router-outlet>
-        </router-outlet>
-    </mat-drawer-content>
-</mat-drawer-container-->
 <mat-drawer-container style="height: 100%;">
     <mat-drawer style="background-color: #fff; width: 25%;" #drawer [mode]="'over'">
 
     </mat-drawer>
     <mat-drawer class="chart-sidenav" #chartDrawer position="end" mode="side">
-      
+
     </mat-drawer>
     <mat-drawer-content>
-     
-      <app-map></app-map>
+
+        <app-map></app-map>
     </mat-drawer-content>
-  </mat-drawer-container>
-
-
+</mat-drawer-container>

@@ -1,5 +1,6 @@
 <div #chartContainer style="width: 100%; height: 100%; overflow: hidden;">
-    <h3 style="display: flex; justify-content: center; margin-top: 10px; margin-bottom: 0;">{{ dataServiceName | capitalAndSpace }}</h3>
+    <h3 style="display: flex; justify-content: center; margin-top: 10px; margin-bottom: 0;">{{ dataServiceName |
+        capitalAndSpace }}</h3>
     <mat-card>
         <p class="description-box" readonly>{{description}}</p>
     </mat-card>
@@ -12,8 +13,8 @@
             <mat-button-toggle value="climatology">Climatology</mat-button-toggle>
         </mat-button-toggle-group>
         <div *ngIf="dataServiceName === 'wave_climate'">
-            <mat-button-toggle-group [value]="selectedFilters.timeRange" (change)="updateFilter('timeRange', $event.value)"
-                style="display: flex;justify-content: center;">
+            <mat-button-toggle-group [value]="selectedFilters.timeRange"
+                (change)="updateFilter('timeRange', $event.value)" style="display: flex;justify-content: center;">
                 <mat-button-toggle value="historical">Historical</mat-button-toggle>
                 <mat-button-toggle value="rcp45">RCP 4.5</mat-button-toggle>
                 <mat-button-toggle value="rcp85">RCP 8.5</mat-button-toggle>
@@ -32,7 +33,7 @@
             </mat-button-toggle-group>
         </div>
     </div>
-    <div *ngIf="dataServiceName === 'atmospheric_data'">
+    <!-- <div *ngIf="dataServiceName === 'atmospheric_data'">
         <mat-button-toggle-group [value]="selectedFilters.variable" style="display: flex;justify-content: center;"
             (change)="updateFilter('variable', $event.value)">
             <mat-button-toggle value="air_temperature">Air Temperature</mat-button-toggle>
@@ -47,6 +48,36 @@
             <mat-button-toggle value="daily_min">Daily Minimum</mat-button-toggle>
             <mat-button-toggle value="daily_sum">Daily Sum</mat-button-toggle>
         </mat-button-toggle-group>
+    </div> -->
+    <div *ngIf="dataServiceName === 'atmospheric_data'">
+
+        <mat-button-toggle-group [value]="selectedFilters.variable" style="display: flex; justify-content: center;"
+            (change)="updateFilter('variable', $event.value)">
+            <mat-button-toggle value="air_temperature" [disabled]="!activeTabs['air_temperature']">Air
+                Temperature</mat-button-toggle>
+
+            <mat-button-toggle value="wind_gusts" [disabled]="!activeTabs['wind_gusts']">Wind Gusts</mat-button-toggle>
+
+            <mat-button-toggle value="wind_speed" [disabled]="!activeTabs['wind_speed']">Wind Speed</mat-button-toggle>
+
+            <mat-button-toggle value="relative_humidity" [disabled]="!activeTabs['relative_humidity']">Relative
+                Humidity</mat-button-toggle>
+
+            <mat-button-toggle value="total_precipitation" [disabled]="!activeTabs['total_precipitation']">Total
+                Precipitation</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <mat-button-toggle-group [value]="selectedFilters.statistic" (change)="updateFilter('statistic', $event.value)"
+            style="display: flex; justify-content: center;">
+            <mat-button-toggle value="daily_min" [disabled]="!isTabEnabled(selectedFilters.variable, 'daily_min')">Daily
+                Minimum</mat-button-toggle>
+            <mat-button-toggle value="daily_max" [disabled]="!isTabEnabled(selectedFilters.variable, 'daily_max')">Daily
+                Maximum</mat-button-toggle>
+
+
+            <mat-button-toggle value="daily_sum" [disabled]="!isTabEnabled(selectedFilters.variable, 'daily_sum')">Daily
+                Sum</mat-button-toggle>
+        </mat-button-toggle-group>
     </div>
     <!-- <ngx-charts-line-chart
         *ngIf="!(dataServiceName === 'sea_level' || dataServiceName === 'wave_climate' || dataServiceName === 'coastal_change') || selectedFilters.frequency === 'monthly'"
@@ -56,7 +87,8 @@
     </ngx-charts-line-chart> -->
     <img [src]="chartImage" alt="Chart Image" style="width: 100%; height: 100%;">
     <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px; margin-bottom: 20px;">
-        <button mat-raised-button color="primary" (click)="downloadCsv()" *ngIf="selectedFilters.frequency !== 'climatology'">
+        <button mat-raised-button color="primary" (click)="downloadCsv()"
+            *ngIf="selectedFilters.frequency !== 'climatology'">
             Download CSV
         </button>
         <button mat-raised-button color="accent" (click)="downloadJpg()">Download JPG</button>
