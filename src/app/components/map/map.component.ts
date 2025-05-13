@@ -410,7 +410,7 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
                   hint.style.left = `${relativeLeft}%`;
                   setTimeout(() => {
                     hint.remove();
-                  }, 60000); // remove hint after 60 seconds
+                  }, 30000); // remove hint after 60 seconds
                 }
               }, 100);
               break;
