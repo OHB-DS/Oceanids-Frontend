@@ -189,8 +189,3 @@ The main functionalities of the frontend are described below.
 
 ## Angular resources
 For further details, refer to the Angular CLI documentation: [Angular CLI Overview and Command Reference](https://angular.io/cli).
-
-
-
-
-
