@@ -1,4 +1,4 @@
-# OceanidsPlatform
+# 🌊 Oceanids Platform
 [![Azure Static Web Apps CI/CD](https://github.com/OHB-DS/Oceanids-Frontend/actions/workflows/azure-static-web-apps-black-island-0597a3903.yml/badge.svg?branch=main)](https://github.com/OHB-DS/Oceanids-Frontend/actions/workflows/azure-static-web-apps-black-island-0597a3903.yml)
 
 The Oceanids platform is an Angular-based web application designed to provide data visualization and analysis tools for coastal and environmental monitoring. It integrates various components and services to deliver a seamless user experience.
@@ -16,7 +16,7 @@ The Oceanids platform is an Angular-based web application designed to provide da
 
 ---
 
-### **Making Changes to the Test and Production Apps**
+### ⚠️**Making Changes to the Test and Production Apps**⚠️
 The Angular application is hosted as an Azure Static Web App.
 The app is deployed with [Github Actions](https://github.com/OHB-DS/Oceanids-Frontend/actions). 
 A new Github workflow is triggered when changes are pushed to the `dev` or `main` branches:
@@ -32,7 +32,7 @@ Make sure to follow this procedure when making changes:
 
 ---
 
-## Documentation
+## 📄 Frontend Documentation
 
 Angular apps are modular, made of bricks called *components* and *services*. 
 
@@ -151,6 +151,15 @@ The main functionalities of the frontend are described below.
 
 ---
 
-## Documentation
+## Angular resources
 For further details, refer to the Angular CLI documentation: [Angular CLI Overview and Command Reference](https://angular.io/cli).
 
+## 📄 Backend FastAPI Endpoints
+
+The backend FastAPI is available at https://gateway.oceanids-project.eu/gateway/dataapi/docs#/
+More documentation to come!
+
+## 🌍 STAC Catalog
+
+The STAC Catalog is available at https://gateway.oceanids-project.eu/gateway/stac/browser/
+It catalogs all the datasets that are available.
