@@ -5,5 +5,5 @@ export const environment = {
     keycloak_url: "https://eo4erkeycloak.azurewebsites.net/",
     keycloak_realm: "OCEANIDS",
     keycloak_client_id: "angular-app",
-    apiUrl: 'https://64.225.142.204/gateway/dataapi'
+    apiUrl: 'https://gateway.oceanids-project.eu/gateway/dataapi'
 };

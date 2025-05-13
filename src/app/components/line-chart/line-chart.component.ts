@@ -57,7 +57,7 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
     this.downloadJpgButtonClicked.emit();
   }
   updateFilter(type: string, value: string) {
-    console.log('updateFilter', type, value);
+    // console.log('updateFilter', type, value);
     if (type === 'variable') {
       this.selectedFilters.variable = value;
       const availableStatistics = ['daily_max', 'daily_min', 'daily_sum'];
