@@ -156,62 +156,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       this.processCustomGroundMotionPolygon(geoJSONGroundMotion, service, this.cityForm.get("city")?.value);
     });
   }
-  // private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined): void {
-  //   // restore the previously selected polygon to its default state
-  //   if (this.selectedPolygon) {
-  //     (this.selectedPolygon as L.Path).setStyle({ fillOpacity: 0.2, color: '#3388ff' }); // default Leaflet style
-  //     this.selectedPolygon.on('mouseover', () => {
-  //       (this.selectedPolygon as L.Path).setStyle({ weight: 5 });
-  //     });
-  //     this.selectedPolygon.on('mouseout', () => {
-  //       (this.selectedPolygon as L.Path).setStyle({ weight: 3 });
-  //     });
-  //     this.selectedPolygon.on('click', () => {
-  //       const previousCityName = (this.selectedPolygon as any).cityName;
-  //       const previousPopup = this.cityPopups[previousCityName];
-  //       this.selectCity(previousCityName, this.selectedPolygon!, previousPopup);
-  //     });
-  //   }
-
-  //   // update the selected polygon
-  //   this.selectedPolygon = layer;
-
-  //   // remove the click, mouseover, and mouseout event listeners
-  //   layer.off('click');
-  //   layer.off('mouseover');
-  //   layer.off('mouseout');
-
-  //   // reattach the click, mouseover, and mouseout event listeners to the current polygon
-  //   layer.on('click', () => {
-  //     this.selectCity(cityName, layer, popup);
-  //   });
-  //   layer.on('mouseover', () => {
-  //     (layer as L.Path).setStyle({ weight: 5 });
-  //   });
-  //   layer.on('mouseout', () => {
-  //     (layer as L.Path).setStyle({ weight: 3 });
-  //   });
-
-  //   // set the style to make it transparent so other layers are visible inside
-  //   (layer as L.Path).setStyle({ fillOpacity: 0, color: 'yellow' });
-
-  //   // fly to the selected city's bounds
-  //   const bounds = (layer as L.Polygon).getBounds();
-  //   const center = bounds.getCenter();
-  //   const zoom = this.map!.getBoundsZoom(bounds) - 1; // calculate the appropriate zoom level for the bounds
-  //   this.map!.flyTo(center, zoom); // fly to the center with the calculated zoom level
-
-  //   // fetch and display data services for the selected city
-  //   this.cityDataServices = [];
-  //   this.fetchAvailableServices(cityName).subscribe(() => {
-  //     this.onCityChange();
-  //   });
-
-  //   // explicitly update the cityForm value to ensure valueChanges is triggered
-  //   if (this.cityForm.get('city')?.value !== cityName) {
-  //     this.cityForm.get('city')?.patchValue(cityName);
-  //   }
-  // }
 
 private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined): void {
     console.log('select')

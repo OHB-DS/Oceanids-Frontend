@@ -36,7 +36,7 @@ export class MapService {
 
     map = L.map('map', {
       layers: [SatelliteMap],
-      center: [43.338804, 21.961847],
+      center: [46, 22],
       zoom: 4,
       maxZoom: 18,
       zoomDelta: 0.25,
