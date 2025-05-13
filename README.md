@@ -5,6 +5,9 @@ The Oceanids platform is an Angular-based web application designed to provide da
 
 ![image](https://github.com/user-attachments/assets/0ca65912-af79-4e26-b065-cc785356dfb5)
 
+Latest video with platform functionalities:
+https://lowtideline.blob.core.windows.net/data/other/animation_2025_05_13.mp4
+
 ### **Setting Up and Running the App Locally**
 - Install dependencies:
   `npm install` (if it throws an error try `npm install --force`)
