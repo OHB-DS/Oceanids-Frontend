@@ -10,13 +10,13 @@ export class CityService {
   constructor(private http: HttpClient) { }
 
   getCities() {
-    return this.http.get(`${environment.apiUrl}/sites`)
+    return this.http.get(`${environment.apiUrl}/info/sites`)
   }
   getServicesForCity(city: string) {
-    return this.http.get(`${environment.apiUrl}/apps/${city}`)
+    return this.http.get(`${environment.apiUrl}/info/services/${city}`)
   }
   getActiveServicesForCity(city: string, service: string) {
-    return this.http.get(`${environment.apiUrl}/apps/${city}/${service}`)
+    return this.http.get(`${environment.apiUrl}/info/timeseries/${city}/${service}`)
   }
   getGeoJson(service: string, city: string, dataType: string) {
     return this.http.get(`${environment.apiUrl}/general/geojson/${city}/${service}/${dataType}`)
@@ -38,12 +38,12 @@ export class CityService {
     })
   }
   getTimeseriesForGroundMotionPoint(service: string, city: string, pointId: string) {
-    return this.http.get(`${environment.apiUrl}/${service}/timeseries/${city}/${pointId}`);
+    return this.http.get(`${environment.apiUrl}/specific/${service}/timeseries/${city}/${pointId}`);
   }
   postCustomGroundMotionPolygon(geoJson: any, service: string, city: string) {
     console.log(geoJson);
     return this.http.post(
-      `${environment.apiUrl}/${service}/${city}/custom_polygon`,
+      `${environment.apiUrl}/specific/${service}/custom_polygon/${city}`,
       geoJson
     );
   }
