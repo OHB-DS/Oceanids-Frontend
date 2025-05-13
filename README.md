@@ -35,9 +35,40 @@ Make sure to follow this procedure when making changes:
 
 ---
 
-## 📄 Frontend Documentation
+### Backend
+
+A backend FastAPI provides the endpoints for the frontend, and is available at https://gateway.oceanids-project.eu/gateway/dataapi/docs#/.
+
+A STAC Catalog is also available to describe the datasets and available at https://gateway.oceanids-project.eu/gateway/stac/browser/
+
+More documentation to come!
+
+---
+
+## 📄 Documentation
+
+### Angular App
 
 Angular apps are modular, made of bricks called *components* and *services*. 
+
+### Table of Contents
+1. [Components](#components)
+   - [Map Component](#1-map-component)
+   - [Line Chart Component](#2-line-chart-component)
+   - [Description Snackbar Component](#3-description-snackbar-component)
+2. [Services](#services)
+   - [City Service](#1-city-service)
+   - [Map Service](#2-map-service)
+   - [Loading Service](#3-loading-service)
+3. [Functionalities](#functionalities)
+4. [Guidelines for Making Changes](#guidelines-for-making-changes)
+   - [Adding a New Component](#1-adding-a-new-component)
+   - [Adding a New Service](#2-adding-a-new-service)
+   - [Modifying Existing Components or Services](#3-modifying-existing-components-or-services)
+   - [Testing](#4-testing)
+   - [Building for Production](#5-building-for-production)
+
+---
 
 ### Components
 
@@ -99,7 +130,9 @@ Services are Typescript file that make the API requests to the backend.
 ---
 
 ### Functionalities
+
 The main functionalities of the frontend are described below.
+
 1. **Interactive Map**:
    - Select cities and toggle data services.
    - Draw polygons and points for custom data analysis.
@@ -156,13 +189,3 @@ The main functionalities of the frontend are described below.
 
 ## Angular resources
 For further details, refer to the Angular CLI documentation: [Angular CLI Overview and Command Reference](https://angular.io/cli).
-
-## 📄 Backend FastAPI Endpoints
-
-The backend FastAPI is available at https://gateway.oceanids-project.eu/gateway/dataapi/docs#/
-More documentation to come!
-
-## 🌍 STAC Catalog
-
-The STAC Catalog is available at https://gateway.oceanids-project.eu/gateway/stac/browser/
-It catalogs all the datasets that are available.
