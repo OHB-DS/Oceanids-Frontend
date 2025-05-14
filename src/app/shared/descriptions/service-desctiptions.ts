@@ -1,5 +1,5 @@
 export const serviceDescriptions: { [key: string]: string } = {
-    'coastal_change': '<h1>Coastal Change Service</h1>' +
+    'coastal_change': '<h3>Coastal Change Service</h3>' +
         '<ul>' +
         '<li>The Coastal Change service provides satellite-based monitoring of changes along sandy coastlines.</li>' +
         '<li>The position of the waterline is automatically mapped on optical satellite images to track the width of the beach over time.</li>' +
@@ -10,7 +10,7 @@ export const serviceDescriptions: { [key: string]: string } = {
         '<a href="https://github.com/kvos/CoastSat">CoastSat toolbox</a>.</li>' +
         '</ul>',
 
-    'ground_motion': '<h1>Ground Motion Service</h1>' +
+    'ground_motion': '<h3>Ground Motion Service</h3>' +
         '<ul>' +
         '<li>The Ground Motion service provides time-series of vertical ground motion (subsidence and uplift) derived from satellite radar interferometry (Sentinel-1).</li>' +
         '<li>This service measures vertical displacement over time, with the Jan 2019 vertical position used as the reference point for the time-series.</li>' +
@@ -19,7 +19,7 @@ export const serviceDescriptions: { [key: string]: string } = {
         '<li><strong>Data Source:</strong> The data is obtained directly from the <a href="https://egms.land.copernicus.eu/">European Ground Motion Service</a>.</li>' +
         '</ul>',
 
-    'wave_climate': '<h1>Wave Climate Service</h1>' +
+    'wave_climate': '<h3>Wave Climate Service</h3>' +
         '<ul>' +
         '<li>The Wave Climate service provides time-series of significant wave height for the historical period (1979-2005) and future projections (2040-2100) under two climate scenarios (RCP4.5 and RCP8.5).</li>' +
         '<li>The significant wave height is a measure of the average of the highest third of the waves over a time window (usually 20 minutes).</li>' +
@@ -28,7 +28,7 @@ export const serviceDescriptions: { [key: string]: string } = {
         '<li><strong>Data Source:</strong> The data is obtained from <a href="https://www.euro-cordex.net/">EURO-CORDEX</a> wave models at the closest grid point.</li>' +
         '</ul>',
 
-    'sea_level': '<h1>Sea Level Service</h1>' +
+    'sea_level': '<h3>Sea Level Service</h3>' +
         '<ul>' +
         '<li>The Sea Level service provides time-series water levels above mean sea level for the historical period (1950-2015) and future projections (2015-2050) using two different climate models.</li>' +
         '<li>This service helps monitor changes in sea levels and assess potential impacts of sea level rise in coastal areas.</li>' +
@@ -37,7 +37,7 @@ export const serviceDescriptions: { [key: string]: string } = {
         '<li><strong>Data Source:</strong> The data is obtained from <a href="https://www.euro-cordex.net/">EURO-CORDEX</a> models (CMCC-CM2-VHR4 and EC-Earth3P-HR) at the closest grid point.</li>' +
         '</ul>',
 
-        'atmospheric_data': '<h1>Atmospheric Data Service</h1>' +
+        'atmospheric_data': '<h3>Atmospheric Data Service</h3>' +
         '<ul>' +
         '<li>Seasonal forecast of atmospheric variables (air temperature, wind gusts, wind speed, relative humidity and total precipitation).</li>' +
         '<li>Future projections (2040-2100) under two different climate scenarios (RCP4.5 and RCP8.5).</li>' +

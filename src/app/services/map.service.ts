@@ -18,7 +18,7 @@ export class MapService {
       format: 'image/png',
       transparent: false,
       layers: 's2cloudless-2020',
-      maxZoom: 19,
+      maxZoom: 20,
       opacity: 1,
     });
 
@@ -36,9 +36,9 @@ export class MapService {
 
     map = L.map('map', {
       layers: [SatelliteMap],
-      center: [46, 22],
-      zoom: 4,
-      maxZoom: 18,
+      center: [48, 20],
+      zoom: 3,
+      maxZoom: 20,
       zoomDelta: 0.25,
       zoomSnap: 0.25,
     });

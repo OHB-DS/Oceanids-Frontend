@@ -48,15 +48,15 @@ body {
 }
 
 .legend-title {
-    font-size: 1.4vh; /* Increased font size for the title */
+    font-size: 1.5vh; /* Increased font size for the title */
     font-weight: bold; /* Made the title bold */
     text-align: center; /* Center-align the title */
     color: white; /* Changed title color to white */
 }
 
 .legend-label {
-    font-size: 1.3vh; /* Increased font size for labels */
-    line-height: 0.13vh; /* Improved line spacing */
+    font-size: 1.5vh; /* Increased font size for labels */
+    line-height: 0.1; /* Improved line spacing */
     color: white; /* Changed label color to white */
 }
 
@@ -101,4 +101,14 @@ ngx-charts-legend {
         border-bottom: 6px solid transparent;
         border-left: 6px solid #ffffcc;
     }
+}
+
+.responsive-font {
+    font-size: 1.5vh !important;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-content {
+    width: auto !important;
+    white-space: normal !important;
 }

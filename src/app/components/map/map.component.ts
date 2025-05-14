@@ -10,7 +10,7 @@ import { MatExpansionPanel } from '@angular/material/expansion';
 import { Series, Timeseries } from 'src/app/shared/models/Timeseries';
 import { GeojsonLayerService } from 'src/app/services/geojson-layer.service';
 import { concatMap, forkJoin, map, Observable, of, startWith, switchMap, tap } from 'rxjs';
-import { defaultValueForSerivces, defaultValueForTimeseries, serviceDescriptions, chartDescriptions } from 'src/app/shared/desctiptions/service-desctiptions';
+import { defaultValueForSerivces, defaultValueForTimeseries, serviceDescriptions, chartDescriptions } from 'src/app/shared/descriptions/service-desctiptions';
 import { saveAs } from 'file-saver';
 import { chartFilter } from 'src/app/shared/models/ChartFilter';
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
@@ -89,9 +89,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
             // store the popup for the city
             const bounds = (layer as L.Polygon).getBounds();
             const center = bounds.getCenter();
-            const popup = L.popup({ closeButton: false })
+            const popup = L.popup({ closeButton: false})
               .setLatLng(center)
-              .setContent(cityName)
+              .setContent(`<div class="responsive-font">${cityName}</div>`)
               .addTo(this.map!);
             this.cityPopups[cityName] = popup;
 
@@ -388,6 +388,10 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
           else if (service === 'ground_motion') {
             this.mapService.removeDrawToolbar();
             this.hideColorBar();
+            const tooltip = document.querySelector('.custom-tooltip-polygon');
+            if (tooltip) {
+              tooltip.remove();
+            }
           }
         }
         this.selectedServiceDescription = '';

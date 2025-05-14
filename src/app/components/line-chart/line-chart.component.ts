@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { LegendPosition } from '@swimlane/ngx-charts';
 import { first } from 'rxjs';
-import { yAxisLabels } from 'src/app/shared/desctiptions/service-desctiptions';
+import { yAxisLabels } from 'src/app/shared/descriptions/service-desctiptions';
 
 
 @Component({

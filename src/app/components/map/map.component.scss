@@ -7,14 +7,12 @@
     position: relative;
     height: calc(100vh - 11.5vh); /* Subtract header (6vh) line (1vh) and footer (4vh) heights */
 }
-
 .map-frame {
     height: 100%;
     border: 2px solid black;
     display: flex; 
     gap: 20px; 
 }
-
 .image {
   position: absolute;
   right: 0;
@@ -25,47 +23,86 @@
   z-index: 500;
 }
 
+.chart-drawer {
+  height: fit-content; 
+  max-height: 82vh;
+  width: 50vw; 
+  margin: 3vh;
+}
+// for smartphones
+@media screen and (max-width: 768px) {
+  .chart-drawer {
+    width: 90vw;
+  }
+}
+
 .flex-container {
   display: flex;
   flex-direction: column;
 }
-
-#custom-icon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-
 .panel-container {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 1%;
+  left: 1%;
   z-index: 1000;
   width: auto;
+  max-width: 50vw;
 }
-
+mat-tab-group {
+  background-color: #faf9f9;
+  opacity: 70%;
+}
+mat-drawer {
+  display: flex;
+  height: fit-content;
+  max-height: 100vh;
+}
 mat-accordion {
   display: flex;
   flex-direction: column;
 }
-
 mat-expansion-panel {
   margin-bottom: 8px;
 }
 
-#customButton {
-  background: white;
-  border: none;
-  cursor: pointer;
-  text-align: center;
-  padding: 10px;
+$font-size-small: 2vh;
+mat-expansion-panel-header {
+  font-size: $font-size-small;
+}
+mat-panel-title {
+  font-size: $font-size-small;
+}
+mat-panel-description {
+  font-size: $font-size-small;
+}
+mat-form-field {
+  font-size: $font-size-small;
+}
+mat-select {
+  font-size: $font-size-small;
+}
+mat-label {
+  font-size: $font-size-small;
+}
+mat-option {
+  font-size: $font-size-small;
+}
+.checkbox-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-size: $font-size-small;
 }
 
-.titre {
-  padding-bottom: 5%;
-  font-size: large;
-  font-weight: bold;
-
+.info-icon {
+  margin-left: 10px;
+  color: #1976d2;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  font-size: $font-size-small;
 }
 
 .card {
@@ -81,31 +118,11 @@ input.number::-webkit-inner-spin-button {
   width: 40%;
 }
 
-mat-tab-group {
-  background-color: #faf9f9;
-  opacity: 70%;
-}
-
-mat-drawer {
-  display: flex;
-  height: fit-content;
-  max-height: 100vh;
-}
-
-.checkbox-label {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.info-icon {
-  // position: absolute;
-  // right: 0;
-  margin-left: 10px;
-  color: #1976d2;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  margin-left: auto;
+// responsiveness for smartphones
+@media screen and (max-width: 768px) {
+  mat-expansion-panel-header {
+    height: auto;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
 }

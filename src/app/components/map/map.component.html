@@ -1,39 +1,28 @@
 <div style="display: flex; height: 100vh; flex-direction: column;">
 
-  <!-- <div style="background-color: #003366; color: white; padding: 5px; height: 40px;">
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-      <div style="display: flex; align-items: center;">
-        <img src="assets/icons/eu_logo.png" alt="EU Logo" style="height: 30px; margin-right: 10px;">
-        <img src="assets/icons/oceanids_logo official.png" alt="Oceanids Logo" style="height: 30px; margin-right: 10px;">
-      </div>
-      <h2 style="margin: 0; text-align: center; flex-grow: 1;">Oceanids Platform</h2>
-      <h5 style="margin: 0; text-align: right;">
-        Project funded from the EU HE research and innovation programme under GA No. 101112919
-      </h5>
-    </div>
-  </div> -->
-
   <mat-drawer-container>
-    <mat-drawer style="height: fit-content; width: 50vw; margin: 20px;" #chartDrawer position="end" mode="over">
-      <button mat-icon-button (click)="closeChartDrawer()" style="position: absolute; top: 10px; right: 10px;">
-        <mat-icon>close</mat-icon>
-      </button>
-      <div style="display: flex; flex-direction: column;height: fit-content;">
-        <app-line-chart *ngIf="timeseries" [multi]="[timeseries]" [dataServiceName]="titleTimeseries"
-          [description]="selectedServiceDescription" (downloadCsvButtonClicked)="downloadTimeseriesCsv()"
-          (downloadJpgButtonClicked)="downloadTimeseriesJpg()"
-          [selectedFilters]="selectedFilters" (filterChange)="onFilterChange($event)"
-          [activeTabs]="activeTabs" [chartImage]="chartImage">
-        </app-line-chart>
-      </div>
+
+    <!-- Analysis panel -->
+    <mat-drawer class="chart-drawer" #chartDrawer position="end" mode="over">
+      <app-line-chart *ngIf="timeseries" [multi]="[timeseries]" [dataServiceName]="titleTimeseries"
+        [description]="selectedServiceDescription" (downloadCsvButtonClicked)="downloadTimeseriesCsv()"
+        (downloadJpgButtonClicked)="downloadTimeseriesJpg()"
+        [selectedFilters]="selectedFilters" (filterChange)="onFilterChange($event)"
+        [activeTabs]="activeTabs" [chartImage]="chartImage">
+      </app-line-chart>
     </mat-drawer>
 
+    <!-- Map panel -->
     <mat-drawer-content style="display: flex; flex-direction: column;">
       <div class="map-frame">
-        <div class="map" id="map">
-          <div class="panel-container" style="margin: 20px;">
+        <div class="map" id="map"> 
+
+          <!-- Menu panels -->
+          <div class="panel-container">
             <form [formGroup]="cityForm">
-              <mat-accordion (dblclick)="$event.stopPropagation()">
+              <mat-accordion (dblclick)="$event.stopPropagation()"> 
+
+                <!-- Cities panel   -->
                 <mat-expansion-panel #citiesPanel>
                   <mat-expansion-panel-header>
                     <mat-panel-title>
@@ -51,6 +40,8 @@
                     </mat-form-field>
                   </mat-panel-description>
                 </mat-expansion-panel>
+
+                <!-- Data Services panel   -->
                 <mat-expansion-panel #dataServicesPanel [disabled]="!cityForm.get('city')?.value">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
@@ -69,10 +60,11 @@
                           <mat-icon (click)="showInfo(cityDataServices[i])">info</mat-icon>
                         </span>
                       </span>
-
                     </div>
                   </div>
                 </mat-expansion-panel>
+
+                <!-- Decision Support panel   -->
                 <mat-expansion-panel>
                   <mat-expansion-panel-header>
                     <mat-panel-title>
@@ -81,6 +73,7 @@
                   </mat-expansion-panel-header>
                   <p>another panel.</p>
                 </mat-expansion-panel>
+
               </mat-accordion>
             </form>
           </div>
