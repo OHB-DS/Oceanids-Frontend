@@ -388,6 +388,10 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
           else if (service === 'ground_motion') {
             this.mapService.removeDrawToolbar();
             this.hideColorBar();
+            const tooltip = document.querySelector('.custom-tooltip-polygon');
+            if (tooltip) {
+              tooltip.remove();
+            }
           }
         }
         this.selectedServiceDescription = '';

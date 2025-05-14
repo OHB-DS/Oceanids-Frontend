@@ -83,8 +83,6 @@ mat-option {
 }
 
 .info-icon {
-  // position: absolute;
-  // right: 0;
   margin-left: 10px;
   color: #1976d2;
   cursor: pointer;
@@ -105,4 +103,13 @@ input.number::-webkit-inner-spin-button {
 
 .chart-sidenav {
   width: 40%;
+}
+
+// responsiveness for smartphones
+@media screen and (max-width: 768px) {
+  mat-expansion-panel-header {
+    height: auto;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
 }
