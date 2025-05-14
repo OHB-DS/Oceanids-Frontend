@@ -23,6 +23,18 @@
   z-index: 500;
 }
 
+.chart-drawer {
+  height: fit-content; 
+  width: 50vw; 
+  margin: 20px;
+}
+// for smartphones
+@media screen and (max-width: 768px) {
+  .chart-drawer {
+    width: 90vw;
+  }
+}
+
 .flex-container {
   display: flex;
   flex-direction: column;

@@ -1,42 +1,48 @@
 <div #chartContainer style="width: 100%; height: 100%; overflow: hidden;">
-    <h3 style="display: flex; justify-content: center; margin-top: 10px; margin-bottom: 0;">{{ dataServiceName | capitalAndSpace }}</h3>
+    <span class="chart-title">{{ dataServiceName | capitalAndSpace }}</span>
     <mat-card>
         <p class="description-box" readonly>{{description}}</p>
     </mat-card>
-    <div *ngIf="dataServiceName === 'sea_level' || dataServiceName === 'wave_climate'">
-        <mat-button-toggle-group [value]="selectedFilters.frequency" style="display: flex;justify-content: center;"
-            (change)="updateFilter('frequency', $event.value)">
+    <div *ngIf="dataServiceName === 'sea_level' || dataServiceName === 'wave_climate'" class="filter-container">
+        <mat-button-toggle-group [value]="selectedFilters.frequency" (change)="updateFilter('frequency', $event.value)"
+        [hideSingleSelectionIndicator]="true">
+            <div class="filter-title">Products</div>
             <mat-button-toggle value="hourly">Hourly</mat-button-toggle>
             <mat-button-toggle value="daily">Daily</mat-button-toggle>
             <mat-button-toggle value="monthly">Monthly</mat-button-toggle>
             <mat-button-toggle value="climatology">Climatology</mat-button-toggle>
             <mat-button-toggle value="extremes">Extremes</mat-button-toggle>
         </mat-button-toggle-group>
-        <div *ngIf="dataServiceName === 'wave_climate'">
+        <div *ngIf="dataServiceName === 'wave_climate'" class="filter-container">
             <mat-button-toggle-group [value]="selectedFilters.timeRange" (change)="updateFilter('timeRange', $event.value)"
-                style="display: flex;justify-content: center;">
+            [hideSingleSelectionIndicator]="true">
+                <div class="filter-title">Time period</div>
                 <mat-button-toggle value="historical">Historical</mat-button-toggle>
                 <mat-button-toggle value="rcp45">RCP 4.5</mat-button-toggle>
                 <mat-button-toggle value="rcp85">RCP 8.5</mat-button-toggle>
             </mat-button-toggle-group>
         </div>
-        <div *ngIf="dataServiceName === 'sea_level'">
-            <mat-button-toggle-group [value]="selectedFilters.timeRange" style="display: flex;justify-content: center;"
-                (change)="updateFilter('timeRange', $event.value)">
+        <div *ngIf="dataServiceName === 'sea_level'" class="filter-container">
+            <mat-button-toggle-group [value]="selectedFilters.timeRange" (change)="updateFilter('timeRange', $event.value)"
+            [hideSingleSelectionIndicator]="true">
+                <div class="filter-title">Time period</div>
                 <mat-button-toggle value="historical">Historical</mat-button-toggle>
                 <mat-button-toggle value="future">Future</mat-button-toggle>
             </mat-button-toggle-group>
             <mat-button-toggle-group [value]="selectedFilters.model" (change)="updateFilter('model', $event.value)"
-                style="display: flex;justify-content: center;">
+            [hideSingleSelectionIndicator]="true">
+                <div class="filter-title">Model</div>
                 <mat-button-toggle value="CMCC-CM2-VHR4">CMCC-CM2-VHR4</mat-button-toggle>
                 <mat-button-toggle value="EC-Earth3P-HR">EC-Earth3P-HR</mat-button-toggle>
             </mat-button-toggle-group>
         </div>
     </div>
-    <div *ngIf="dataServiceName === 'atmospheric_data'">
-        <mat-button-toggle-group [value]="selectedFilters.variable"  (change)="updateFilter('variable', $event.value)" style="display: flex; justify-content: center;">
-            <mat-button-toggle value="air_temperature" [disabled]="!activeTabs['air_temperature']">Air
-                Temperature
+    <div *ngIf="dataServiceName === 'atmospheric_data'" class="filter-container">
+        <mat-button-toggle-group [value]="selectedFilters.variable"  (change)="updateFilter('variable', $event.value)"
+        [hideSingleSelectionIndicator]="true">
+            <div class="filter-title">Variable</div>
+            <mat-button-toggle value="air_temperature" [disabled]="!activeTabs['air_temperature']">
+                Air Temperature
             </mat-button-toggle>
             <mat-button-toggle value="wind_gusts" [disabled]="!activeTabs['wind_gusts']">
                 Wind Gusts
@@ -51,7 +57,9 @@
                 Total Precipitation
             </mat-button-toggle>
         </mat-button-toggle-group>
-        <mat-button-toggle-group [value]="selectedFilters.statistic" (change)="updateFilter('statistic', $event.value)" style="display: flex; justify-content: center;">
+        <mat-button-toggle-group [value]="selectedFilters.statistic" (change)="updateFilter('statistic', $event.value)"
+        [hideSingleSelectionIndicator]="true">
+            <div class="filter-title">Statistic</div>
             <mat-button-toggle value="daily_min" [disabled]="!isTabEnabled(selectedFilters.variable, 'daily_min')">
                 Daily Minimum
             </mat-button-toggle>
@@ -69,12 +77,12 @@
         [legendPosition]="below" [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel" [xAxis]="xAxis"
         [yAxis]="yAxis" [yAxisLabel]="yAxisLabel" [timeline]="timeline">
     </ngx-charts-line-chart> -->
-    <img [src]="chartImage" alt="Chart Image" style="width: 100%; height: 100%;">
-    <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px; margin-bottom: 20px;">
-        <button mat-raised-button color="primary" (click)="downloadCsv()" *ngIf="selectedFilters.frequency !== 'climatology'">
+    <img [src]="chartImage" alt="Chart Image" class="chart-image">
+    <div class="button-container">
+        <button mat-raised-button color="primary" (click)="downloadCsv()" *ngIf="selectedFilters.frequency !== 'climatology'" class="button-download">
             Download CSV
         </button>
-        <button mat-raised-button color="accent" (click)="downloadJpg()">
+        <button mat-raised-button color="accent" (click)="downloadJpg()" class="button-download">
             Download JPG
         </button>
     </div>

@@ -3,10 +3,7 @@
   <mat-drawer-container>
 
     <!-- Analysis panel -->
-    <mat-drawer style="height: fit-content; width: 50vw; margin: 20px;" #chartDrawer position="end" mode="over">
-      <button mat-icon-button (click)="closeChartDrawer()" style="position: absolute; top: 10px; right: 10px;">
-        <mat-icon>close</mat-icon>
-      </button>
+    <mat-drawer class="chart-drawer" #chartDrawer position="end" mode="over">
       <div style="display: flex; flex-direction: column;height: fit-content;">
         <app-line-chart *ngIf="timeseries" [multi]="[timeseries]" [dataServiceName]="titleTimeseries"
           [description]="selectedServiceDescription" (downloadCsvButtonClicked)="downloadTimeseriesCsv()"
@@ -78,7 +75,7 @@
                   </mat-expansion-panel-header>
                   <p>another panel.</p>
                 </mat-expansion-panel>
-                
+
               </mat-accordion>
             </form>
           </div>
