@@ -1,5 +1,5 @@
 import chroma from "chroma-js";
-import { legendGrades, legendLabels, legendTitle } from 'src/app/shared/desctiptions/service-desctiptions';
+import { legendGrades, legendLabels, legendTitle } from 'src/app/shared/descriptions/service-desctiptions';
 export class LegendUtils {
   static generateLegend(service: string): string {
     const grades = legendGrades[service];

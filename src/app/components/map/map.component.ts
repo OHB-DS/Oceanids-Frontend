@@ -10,7 +10,7 @@ import { MatExpansionPanel } from '@angular/material/expansion';
 import { Series, Timeseries } from 'src/app/shared/models/Timeseries';
 import { GeojsonLayerService } from 'src/app/services/geojson-layer.service';
 import { concatMap, forkJoin, map, Observable, of, startWith, switchMap, tap } from 'rxjs';
-import { defaultValueForSerivces, defaultValueForTimeseries, serviceDescriptions, chartDescriptions } from 'src/app/shared/desctiptions/service-desctiptions';
+import { defaultValueForSerivces, defaultValueForTimeseries, serviceDescriptions, chartDescriptions } from 'src/app/shared/descriptions/service-desctiptions';
 import { saveAs } from 'file-saver';
 import { chartFilter } from 'src/app/shared/models/ChartFilter';
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
