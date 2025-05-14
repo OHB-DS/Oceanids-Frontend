@@ -89,9 +89,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
             // store the popup for the city
             const bounds = (layer as L.Polygon).getBounds();
             const center = bounds.getCenter();
-            const popup = L.popup({ closeButton: false })
+            const popup = L.popup({ closeButton: false})
               .setLatLng(center)
-              .setContent(cityName)
+              .setContent(`<div class="responsive-font">${cityName}</div>`)
               .addTo(this.map!);
             this.cityPopups[cityName] = popup;
 
