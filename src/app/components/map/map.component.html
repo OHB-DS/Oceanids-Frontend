@@ -4,14 +4,12 @@
 
     <!-- Analysis panel -->
     <mat-drawer class="chart-drawer" #chartDrawer position="end" mode="over">
-      <div style="display: flex; flex-direction: column;height: fit-content;">
-        <app-line-chart *ngIf="timeseries" [multi]="[timeseries]" [dataServiceName]="titleTimeseries"
-          [description]="selectedServiceDescription" (downloadCsvButtonClicked)="downloadTimeseriesCsv()"
-          (downloadJpgButtonClicked)="downloadTimeseriesJpg()"
-          [selectedFilters]="selectedFilters" (filterChange)="onFilterChange($event)"
-          [activeTabs]="activeTabs" [chartImage]="chartImage">
-        </app-line-chart>
-      </div>
+      <app-line-chart *ngIf="timeseries" [multi]="[timeseries]" [dataServiceName]="titleTimeseries"
+        [description]="selectedServiceDescription" (downloadCsvButtonClicked)="downloadTimeseriesCsv()"
+        (downloadJpgButtonClicked)="downloadTimeseriesJpg()"
+        [selectedFilters]="selectedFilters" (filterChange)="onFilterChange($event)"
+        [activeTabs]="activeTabs" [chartImage]="chartImage">
+      </app-line-chart>
     </mat-drawer>
 
     <!-- Map panel -->
