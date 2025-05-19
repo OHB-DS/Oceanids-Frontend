@@ -51,7 +51,7 @@ A workflow is triggered when changes are pushed to the `dev` or `main` branches:
 The backend is a FastAPI service providing endpoints for the frontend:  
 [API Docs](https://gateway.oceanids-project.eu/gateway/dataapi/docs#/)
 
-Full documentation on the endpoints is provided in the [API Endpoints](#️api-endpoints) section below.
+Full documentation on the endpoints is provided in the [API Endpoints](#api-endpoints) section below.
 
 A [STAC Catalog](https://gateway.oceanids-project.eu/gateway/stac/browser/) is also available (accept certificates if prompted).
 
@@ -200,6 +200,12 @@ See the [Angular CLI Overview and Command Reference](https://angular.io/cli) for
 
 ## 🛠️ API Endpoints
 
+The API Endpoints are available as a FastAPI service at https://gateway.oceanids-project.eu/gateway/dataapi/docs#/.
+- The **INFO** endpoints are used to interrogate the database and find out what data is available.
+- The **GENERAL** endpoints are used to retrieve the data as GeoJSON (for spatial layers), CSV (for time-series) or JPG (for plots).
+- The **GROUND MOTION** endpoints are for specific functions that are only applicable to the ground motion service, like drawing a custom polygon.
+- The **FOR DEVELOPERS** endpoints are only for developers and not used by the frontend.
+
 ```
 -------------------------------------------------------------------------------
 API Endpoints Documentation
@@ -216,46 +222,70 @@ GET   /info/sites
 
 GET   /info/services/{site}
    - List available services for a given site.
-   Example: GET https://gateway.oceanids-project.eu/gateway/dataapi/info/services/Bretagne
+   Example: GET https://gateway.oceanids-project.eu/gateway/dataapi/info/services/Malaga
 
 GET   /info/timeseries/{site}/{app_domain}
    - List available timeseries datasets for a site and service.
-   Example: GET https://gateway.oceanids-project.eu/gateway/dataapi/info/timeseries/Bretagne/wave_climate
+   Example: 
+    GET https://gateway.oceanids-project.eu/gateway/dataapi/info/timeseries/Malaga/wave_climate
+    GET https://gateway.oceanids-project.eu/gateway/dataapi/info/timeseries/Malaga/sea_level
+    GET https://gateway.oceanids-project.eu/gateway/dataapi/info/timeseries/Malaga/coastal_change
+    GET https://gateway.oceanids-project.eu/gateway/dataapi/info/timeseries/Malaga/ground_motion
+    GET https://gateway.oceanids-project.eu/gateway/dataapi/info/timeseries/Malaga/atmospheric_data
 
 GET   /info/geojson/{site}/{app_domain}
    - List available spatial (GeoJSON) layers for a site and service.
-   Example: GET https://gateway.oceanids-project.eu/gateway/dataapi/info/geojson/Bretagne/wave_climate
+   Example: 
+    GET https://gateway.oceanids-project.eu/gateway/dataapi/info/geojson/Malaga/wave_climate
+    GET https://gateway.oceanids-project.eu/gateway/dataapi/info/geojson/Malaga/sea_level
+    GET https://gateway.oceanids-project.eu/gateway/dataapi/info/geojson/Malaga/coastal_change
+    GET https://gateway.oceanids-project.eu/gateway/dataapi/info/geojson/Malaga/ground_motion
+    GET https://gateway.oceanids-project.eu/gateway/dataapi/info/geojson/Malaga/atmospheric_data
 
 [GENERAL]
 GET   /general/geojson/{site}/{app_domain}/{data_type}
    - Get a GeoJSON asset as JSON.
-   Example: GET https://gateway.oceanids-project.eu/gateway/dataapi/general/geojson/Bretagne/wave_climate/shoreline
+   Example: 
+    GET https://gateway.oceanids-project.eu/gateway/dataapi/general/geojson/Malaga/wave_climate/wave_climate_points
+    GET https://gateway.oceanids-project.eu/gateway/dataapi/general/geojson/Malaga/sea_level/sea_level_points
+    GET https://gateway.oceanids-project.eu/gateway/dataapi/general/geojson/Malaga/coastal_change/coastal_change_transects
+    GET https://gateway.oceanids-project.eu/gateway/dataapi/general/geojson/Malaga/ground_motion/ground_motion_polygon
+    GET https://gateway.oceanids-project.eu/gateway/dataapi/general/geojson/Malaga/atmospheric_data/atmospheric_data_points
 
 GET   /general/timeseries/{site}/{app_domain}/{data_id}
    - Get a timeseries asset as JSON.
-   Example: GET https://gateway.oceanids-project.eu/gateway/dataapi/general/timeseries/Bretagne/wave_climate/Bretagne_waveheight
-
-GET   /general/timeseries/{site}/{app_domain}/{data_id}/image
-   - Get a timeseries plot as base64-encoded image.
-   Example: GET https://gateway.oceanids-project.eu/gateway/dataapi/general/timeseries/Bretagne/wave_climate/Bretagne_waveheight/image
+   Example: 
+      GET https://gateway.oceanids-project.eu/gateway/dataapi/general/timeseries/Malaga/wave_climate/Malaga_wave_climate_rcp85_daily
+      GET https://gateway.oceanids-project.eu/gateway/dataapi/general/timeseries/Malaga/sea_level/Malaga_sea_level_CMCC-CM2-VHR4_historical_daily
+      GET https://gateway.oceanids-project.eu/gateway/dataapi/general/timeseries/Malaga/coastal_change/Malaga_coastal_change_transect_0069
+      GET https://gateway.oceanids-project.eu/gateway/dataapi/general/timeseries/Malaga/ground_motion/Malaga_ground_motion_polygon
+      GET https://gateway.oceanids-project.eu/gateway/dataapi/general/timeseries/Malaga/atmospheric_data/Malaga_Puerto_atmospheric_data_air_temperature_daily_max
 
 GET   /general/timeseries/{site}/{app_domain}/{data_id}/csv
    - Download a timeseries as CSV.
-   Example: GET https://gateway.oceanids-project.eu/gateway/dataapi/general/timeseries/Bretagne/wave_climate/Bretagne_waveheight/csv
+   Example:
+      GET https://gateway.oceanids-project.eu/gateway/dataapi/general/timeseries/Malaga/wave_climate/Malaga_wave_climate_rcp85_daily/csv
 
 GET   /general/timeseries/{site}/{app_domain}/{data_id}/jpg
    - Download a timeseries plot as JPG.
-   Example: GET https://gateway.oceanids-project.eu/gateway/dataapi/general/timeseries/Bretagne/wave_climate/Bretagne_waveheight/jpg
+   Example:
+      GET https://gateway.oceanids-project.eu/gateway/dataapi/general/timeseries/Malaga/wave_climate/Malaga_wave_climate_rcp85_daily/jpg
+
+GET   /general/timeseries/{site}/{app_domain}/{data_id}/image
+   - Get a timeseries plot as base64-encoded image.
+   Example:
+      GET https://gateway.oceanids-project.eu/gateway/dataapi/general/timeseries/Malaga/wave_climate/Malaga_wave_climate_rcp85_daily/image
 
 [GROUND MOTION]
-GET   /specific/ground_motion/timeseries/{site}/{point_id}
-   - Get ground motion timeseries for a specific point.
-   Example: GET https://gateway.oceanids-project.eu/gateway/dataapi/specific/ground_motion/timeseries/Bretagne/point123
 
 POST  /specific/ground_motion/custom_polygon/{site}
    - Get ground motion timeseries for a custom polygon (GeoJSON payload).
-   Example: POST https://gateway.oceanids-project.eu/gateway/dataapi/specific/ground_motion/custom_polygon/Bretagne
-         Body: { "type": "Polygon", "coordinates": [[[...]]] }
+   Example: POST https://gateway.oceanids-project.eu/gateway/dataapi/specific/ground_motion/custom_polygon/Malaga
+            Body: {"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[-4.376678,36.727391],[-4.378052,36.718313],[-4.355392,36.715012],[-4.353333,36.72519],[-4.376678,36.727391]]]}}
+
+GET   /specific/ground_motion/timeseries/{site}/{point_id}
+   - Get ground motion timeseries for a specific point.
+   Example: GET https://gateway.oceanids-project.eu/gateway/dataapi/specific/ground_motion/timeseries/Malaga/40JyLoghfv
 
 [FOR DEVELOPERS]
 POST  /developers/preprocess/{site}/{app_domain}
