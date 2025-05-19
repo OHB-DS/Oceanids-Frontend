@@ -16,7 +16,7 @@ export class CityService {
     return this.http.get(`${environment.apiUrl}/info/services/${city}`)
   }
   getActiveServicesForCity(city: string, service: string) {
-    return this.http.get(`${environment.apiUrl}/info/timeseries/${city}/${service}`)
+    return this.http.get(`${environment.apiUrl}/specific/atmospheric_data/timeseries/${city}`)
   }
   getGeoJson(service: string, city: string, dataType: string) {
     return this.http.get(`${environment.apiUrl}/general/geojson/${city}/${service}/${dataType}`)
