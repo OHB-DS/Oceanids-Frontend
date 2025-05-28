@@ -60,7 +60,7 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
     // console.log('updateFilter', type, value);
     if (type === 'variable') {
       this.selectedFilters.variable = value;
-      const availableStatistics = ['daily_max', 'daily_min', 'daily_sum'];
+      const availableStatistics = ['daily_max', 'daily_min', 'daily_sum', 'daily_avg'];
       const availableStat = availableStatistics.find(stat => this.isTabEnabled(value, stat));
 
       if (!availableStat || !this.isTabEnabled(value, this.selectedFilters.statistic)) {
