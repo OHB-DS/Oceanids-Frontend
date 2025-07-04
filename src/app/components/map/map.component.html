@@ -26,12 +26,12 @@
                 <mat-expansion-panel #citiesPanel>
                   <mat-expansion-panel-header>
                     <mat-panel-title>
-                      {{cityForm.get('city')?.value ? cityForm.get('city')?.value : 'Cities'}}
+                      {{cityForm.get('city')?.value ? cityForm.get('city')?.value : 'Location'}}
                     </mat-panel-title>
                   </mat-expansion-panel-header>
                   <mat-panel-description>
                     <mat-form-field>
-                      <mat-label>Select City</mat-label>
+                      <mat-label>Select Location</mat-label>
                       <mat-select formControlName="city">
                         <mat-option *ngFor="let city of cityNames" [value]="city">
                           {{ city }}
