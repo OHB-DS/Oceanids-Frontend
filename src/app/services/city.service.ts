@@ -42,8 +42,12 @@ export class CityService {
   postCustomGroundMotionPolygon(geoJson: any, service: string, city: string) {
     return this.http.post(`${environment.apiUrl}/specific/${service}/custom_polygon/${city}`,geoJson);
   }
-  getFloodmap(city: string, returnPeriod: string, scenario: string, time: string) {
+  getFloodmapImages(city: string, returnPeriod: string, scenario: string, time: string) {
     return this.http.get(`${environment.apiUrl}/specific/flooding/${city}/${returnPeriod}/${scenario}/${time}/image`, 
       {responseType: 'text'})
+  }
+  getFloodmapDownload(city: string, returnPeriod: string, scenario: string, time: string, data_type: string) {
+    return this.http.get(`${environment.apiUrl}/specific/flooding/${city}/${returnPeriod}/${scenario}/${time}/${data_type}/download`, 
+      {responseType: 'blob'})
   }
 }

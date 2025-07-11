@@ -205,7 +205,7 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
     }
   }
 
-  downloadTimeseriesCsv() {
+  downloadCsv() {
     const city = this.timeseries.name;
     const service = this.timeseries.service;
     const dataId = this.timeseries.transectId;
@@ -214,12 +214,26 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
     });
   }
 
-  downloadTimeseriesJpg() {
-    const city = this.timeseries.name;
-    const service = this.timeseries.service;
-    const dataId = this.timeseries.transectId;
-    this.cityService.getTimeseriesJpg(city, service, dataId).subscribe(res => {
-      saveAs(res, `${dataId}.jpg`);
+  downloadJpg() {
+    console.log(this.selectedFilters);
+    if (this.selectedFilters.service !== 'flooding') {
+      const city = this.timeseries.name;
+      const service = this.timeseries.service;
+      const dataId = this.timeseries.transectId;
+      this.cityService.getTimeseriesJpg(city, service, dataId).subscribe(res => {
+        saveAs(res, `${dataId}.jpg`);
+      });
+    } else {
+      this.cityService.getFloodmapDownload(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange, 'jpg').subscribe(res => {
+        saveAs(res, `${this.selectedFilters.site}_${this.selectedFilters.service}_${this.selectedFilters.returnPeriod}_${this.selectedFilters.climateScenario}_${this.selectedFilters.timeRange}.jpg`);
+      });
+    }
+  }
+
+  downloadTif() {
+    console.log('downloadTif', this.selectedFilters);
+    this.cityService.getFloodmapDownload(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange, 'tif').subscribe(res => {
+      saveAs(res, `${this.selectedFilters.site}_${this.selectedFilters.service}_${this.selectedFilters.returnPeriod}_${this.selectedFilters.climateScenario}_${this.selectedFilters.timeRange}.tif`);
     });
   }
 
@@ -605,7 +619,7 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
     })
   }
   fetchFloodMap(city: string, returnPeriod: string, scenario: string, time: string) {
-    this.cityService.getFloodmap(city, returnPeriod, scenario, time).subscribe((image: any) => {
+    this.cityService.getFloodmapImages(city, returnPeriod, scenario, time).subscribe((image: any) => {
       this.chartDrawer.open();
       this.chartImage = "data:image/png;base64," + image;
     });
