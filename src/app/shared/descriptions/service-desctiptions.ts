@@ -71,6 +71,7 @@ export const defaultValueForSerivces: { [key: string]: string } = {
     'wave_climate': 'wave_climate_points',
     'sea_level': 'sea_level_points',
     'atmospheric_data': 'atmospheric_data_points',
+    'flooding': 'none',
 }
 export const defaultValueForTimeseries: { [key: string]: string } = {
     'ground_motion': 'ground_motion_polygon',

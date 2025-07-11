@@ -16,7 +16,7 @@
         <div *ngIf="dataServiceName === 'wave_climate'" class="filter-container">
             <mat-button-toggle-group [value]="selectedFilters.timeRange" (change)="updateFilter('timeRange', $event.value)"
             [hideSingleSelectionIndicator]="true">
-                <div class="filter-title">Time period</div>
+                <div class="filter-title">Climate Scenario</div>
                 <mat-button-toggle value="historical">Historical</mat-button-toggle>
                 <mat-button-toggle value="rcp45">RCP 4.5</mat-button-toggle>
                 <mat-button-toggle value="rcp85">RCP 8.5</mat-button-toggle>
@@ -72,6 +72,29 @@
             <mat-button-toggle value="daily_avg" [disabled]="!isTabEnabled(selectedFilters.variable, 'daily_avg')">
                 Daily Average
             </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+    <div *ngIf="dataServiceName === 'flooding'" class="filter-container">
+        <mat-button-toggle-group [value]="selectedFilters.returnPeriod"  (change)="updateFilter('returnPeriod', $event.value)"
+        [hideSingleSelectionIndicator]="true">
+            <div class="filter-title">Return Period</div>
+            <mat-button-toggle value="1">1 year</mat-button-toggle>
+            <mat-button-toggle value="100">100 years</mat-button-toggle>
+            <mat-button-toggle value="1000">1000 years</mat-button-toggle>
+        </mat-button-toggle-group>
+        <mat-button-toggle-group [value]="selectedFilters.climateScenario"  (change)="updateFilter('climateScenario', $event.value)"
+        [hideSingleSelectionIndicator]="true">
+            <div class="filter-title">Climate Scenario</div>
+            <mat-button-toggle value="None">None</mat-button-toggle>
+            <mat-button-toggle value="SSP245">RCP4.5</mat-button-toggle>
+            <mat-button-toggle value="SSP585">RCP8.5</mat-button-toggle>
+        </mat-button-toggle-group>
+        <mat-button-toggle-group [value]="selectedFilters.timeRange"  (change)="updateFilter('timeRange', $event.value)"
+        [hideSingleSelectionIndicator]="true">
+            <div class="filter-title">Time Period</div>
+            <mat-button-toggle value="2010">2010</mat-button-toggle>
+            <mat-button-toggle value="2050">2050</mat-button-toggle>
+            <mat-button-toggle value="2100">2100</mat-button-toggle>
         </mat-button-toggle-group>
     </div>
     <!-- <ngx-charts-line-chart
