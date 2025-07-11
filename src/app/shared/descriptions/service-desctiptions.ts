@@ -44,6 +44,13 @@ export const serviceDescriptions: { [key: string]: string } = {
         '<li>The seasonal forecast is provided at a daily timescale for the next 6 months.</li>' +
         '<li>It aids in the development of adaptation strategies for cities and ports.</li>' +
         '<li><strong>Data Source:</strong> The data is obtained by downscaling the <a href="https://www.euro-cordex.net/">EURO-CORDEX</a> models with in situ station data.</li>' +
+        '</ul>',
+
+        'flooding': '<h3>Coastal Flooding Service</h3>' +
+        '<ul>' +
+        '<li>Coastal flood maps showing expected flooded areas for a given return period event.</li>' +
+        '<li>This flood maps show coastal flooding, not pluvial or fluvial flooding</li>' +
+        '<li><strong>Data Source:</strong> The data is obtained directly from the <a href="https://platform.coclicoservices.eu/">CoCliCo services</a></li>' +
         '</ul>'
 };
 export const chartDescriptions: { [key: string]: string } = {
@@ -57,11 +64,15 @@ export const chartDescriptions: { [key: string]: string } = {
 
     'wave_climate': 'Time-series of significant wave height for the historical period (1979-2005) ' +
         'and future projections (2040-2100) under two climate scenarios (RCP4.5 and RCP8.5).',
+
     'sea_level': 'Time-series of water levels above mean sea level for the historical period (1950-2015) ' +
         'and future projections (2015-2050) using two different climate models. ',
         
     'atmospheric_data': 'Seasonal forecast of atmospheric variables (air temperature, wind gusts, wind speed, relative humidity and total precipitation) ' +
-        'and future projections (2040-2100) under two different climate scenarios (RCP4.5 and RCP8.5). '
+        'and future projections (2040-2100) under two different climate scenarios (RCP4.5 and RCP8.5). ',
+    
+    'flooding': 'The coastal flood map shows the areas that are expected to be flooded during a specific return period event, ' +
+        'such as a 100-year flood, under the selected climate scenario. This is only for coastal flooding, not pluvial or fluvial flooding.'
 };
 export const defaultValueForSerivces: { [key: string]: string } = {
     'coastal_change': 'coastal_change_transects',

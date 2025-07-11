@@ -105,8 +105,13 @@
     </ngx-charts-line-chart> -->
     <img [src]="chartImage" alt="Chart Image" class="chart-image">
     <div class="button-container">
-        <button mat-raised-button color="primary" (click)="downloadCsv()" *ngIf="selectedFilters.frequency !== 'climatology'" class="button-download">
+        <button mat-raised-button color="primary" (click)="downloadCsv()" *ngIf="selectedFilters.frequency !== 'climatology' && dataServiceName !== 'flooding'"
+         class="button-download">
             Download CSV
+        </button>
+        <button mat-raised-button style="background-color: #4caf50; color: white;" (click)="downloadJpg()" *ngIf="dataServiceName == 'flooding'"
+        class="button-download">
+            Download TIFF
         </button>
         <button mat-raised-button color="accent" (click)="downloadJpg()" class="button-download">
             Download JPG
