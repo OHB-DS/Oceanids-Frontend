@@ -25,26 +25,29 @@ export class CityService {
     return this.http.get(`${environment.apiUrl}/general/timeseries/${city}/${service}/${dataId}`)
   }
   getTimeseriesImages(city: string, service: string, dataId: string) {
-    return this.http.get(`${environment.apiUrl}/general/timeseries/${city}/${service}/${dataId}/image`, { responseType: 'text' })
+    return this.http.get(`${environment.apiUrl}/general/timeseries/${city}/${service}/${dataId}/image`,
+      {responseType: 'text'})
   }
   getTimeseriesCsv(city: string, service: string, dataId: string) {
-    return this.http.get(`${environment.apiUrl}/general/timeseries/${city}/${service}/${dataId}/csv`, {
-      responseType: 'blob'
-    })
+    return this.http.get(`${environment.apiUrl}/general/timeseries/${city}/${service}/${dataId}/csv`, 
+      {responseType: 'blob'})
   }
   getTimeseriesJpg(city: string, service: string, dataId: string) {
-    return this.http.get(`${environment.apiUrl}/general/timeseries/${city}/${service}/${dataId}/jpg`, {
-      responseType: 'blob'
-    })
+    return this.http.get(`${environment.apiUrl}/general/timeseries/${city}/${service}/${dataId}/jpg`, 
+      {responseType: 'blob'})
   }
   getTimeseriesForGroundMotionPoint(service: string, city: string, pointId: string) {
     return this.http.get(`${environment.apiUrl}/specific/${service}/timeseries/${city}/${pointId}`);
   }
   postCustomGroundMotionPolygon(geoJson: any, service: string, city: string) {
-    console.log(geoJson);
-    return this.http.post(
-      `${environment.apiUrl}/specific/${service}/custom_polygon/${city}`,
-      geoJson
-    );
+    return this.http.post(`${environment.apiUrl}/specific/${service}/custom_polygon/${city}`,geoJson);
+  }
+  getFloodmapImages(city: string, returnPeriod: string, scenario: string, time: string) {
+    return this.http.get(`${environment.apiUrl}/specific/flooding/${city}/${returnPeriod}/${scenario}/${time}/image`, 
+      {responseType: 'text'})
+  }
+  getFloodmapDownload(city: string, returnPeriod: string, scenario: string, time: string, data_type: string) {
+    return this.http.get(`${environment.apiUrl}/specific/flooding/${city}/${returnPeriod}/${scenario}/${time}/${data_type}/download`, 
+      {responseType: 'blob'})
   }
 }

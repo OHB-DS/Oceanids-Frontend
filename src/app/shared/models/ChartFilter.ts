@@ -6,5 +6,7 @@ export interface chartFilter {
     timeRange: string,
     model: string,
     variable: string,
-    statistic: string
+    statistic: string,
+    returnPeriod: string,
+    climateScenario: string,
 };

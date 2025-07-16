@@ -5,8 +5,10 @@
     <!-- Analysis panel -->
     <mat-drawer class="chart-drawer" #chartDrawer position="end" mode="over">
       <app-line-chart *ngIf="timeseries" [multi]="[timeseries]" [dataServiceName]="titleTimeseries"
-        [description]="selectedServiceDescription" (downloadCsvButtonClicked)="downloadTimeseriesCsv()"
-        (downloadJpgButtonClicked)="downloadTimeseriesJpg()"
+        [description]="selectedServiceDescription" 
+        (downloadCsvButtonClicked)="downloadCsv()"
+        (downloadJpgButtonClicked)="downloadJpg()"
+        (downloadTifButtonClicked)="downloadTif()"
         [selectedFilters]="selectedFilters" (filterChange)="onFilterChange($event)"
         [activeTabs]="activeTabs" [chartImage]="chartImage">
       </app-line-chart>

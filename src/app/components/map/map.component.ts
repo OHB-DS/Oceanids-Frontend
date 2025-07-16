@@ -205,7 +205,7 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
     }
   }
 
-  downloadTimeseriesCsv() {
+  downloadCsv() {
     const city = this.timeseries.name;
     const service = this.timeseries.service;
     const dataId = this.timeseries.transectId;
@@ -214,12 +214,26 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
     });
   }
 
-  downloadTimeseriesJpg() {
-    const city = this.timeseries.name;
-    const service = this.timeseries.service;
-    const dataId = this.timeseries.transectId;
-    this.cityService.getTimeseriesJpg(city, service, dataId).subscribe(res => {
-      saveAs(res, `${dataId}.jpg`);
+  downloadJpg() {
+    console.log(this.selectedFilters);
+    if (this.selectedFilters.service !== 'flooding') {
+      const city = this.timeseries.name;
+      const service = this.timeseries.service;
+      const dataId = this.timeseries.transectId;
+      this.cityService.getTimeseriesJpg(city, service, dataId).subscribe(res => {
+        saveAs(res, `${dataId}.jpg`);
+      });
+    } else {
+      this.cityService.getFloodmapDownload(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange, 'jpg').subscribe(res => {
+        saveAs(res, `${this.selectedFilters.site}_${this.selectedFilters.service}_${this.selectedFilters.returnPeriod}_${this.selectedFilters.climateScenario}_${this.selectedFilters.timeRange}.jpg`);
+      });
+    }
+  }
+
+  downloadTif() {
+    console.log('downloadTif', this.selectedFilters);
+    this.cityService.getFloodmapDownload(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange, 'tif').subscribe(res => {
+      saveAs(res, `${this.selectedFilters.site}_${this.selectedFilters.service}_${this.selectedFilters.returnPeriod}_${this.selectedFilters.climateScenario}_${this.selectedFilters.timeRange}.tif`);
     });
   }
 
@@ -363,14 +377,31 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
               // add points
               this.geoJsonService.addGeoJsonWavesOrSeaLevelorAtmosphericLayer(result, service, this.cityForm.get('city')?.value, this.drawnItems!, this, this.map!);
               break;
+
             case 'sea_level':
               // add points
               this.geoJsonService.addGeoJsonWavesOrSeaLevelorAtmosphericLayer(result, service, this.cityForm.get('city')?.value, this.drawnItems!, this, this.map!);
               break;
-              case 'atmospheric_data':
-                // add points
-                this.geoJsonService.addGeoJsonWavesOrSeaLevelorAtmosphericLayer(result, service, this.cityForm.get('city')?.value, this.drawnItems!, this, this.map!);
-                break;
+
+            case 'atmospheric_data':
+              // add points
+              this.geoJsonService.addGeoJsonWavesOrSeaLevelorAtmosphericLayer(result, service, this.cityForm.get('city')?.value, this.drawnItems!, this, this.map!);
+              break;
+
+            case 'flooding':
+              // when selecting flooding, only open the line-chart drawer and show the jpeg map
+              this.selectedServiceDescription = chartDescriptions[service] || 'No description available.';
+              this.titleTimeseries = service;
+              // fetch the flood map
+              this.selectedFilters.site = city;
+              this.selectedFilters.service = service;
+              //@ts-ignore
+              this.selectedFilters.timeRange = '2100';
+              this.selectedFilters.returnPeriod = '100';
+              this.selectedFilters.climateScenario = 'SSP245';
+              this.fetchFloodMap(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange);
+              break;
+
             default:
               break;
           }
@@ -435,45 +466,54 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
     timeRange: '',
     model: '',
     variable: '',
-    statistic: ''
+    statistic: '',
+    returnPeriod: '',
+    climateScenario: '',
   };
 
   onFilterChange(updatedFilters: any) {
     this.selectedFilters = { ...this.selectedFilters, ...updatedFilters };
     let dataId = '';
-    switch (this.selectedFilters.service) {
-      case 'sea_level':
-        // sea level has multiple models (CMCC-CM2-VHR4 and EC-Earth3P-HR), so needs model keyword
-        if (this.selectedFilters.frequency === 'extremes') {
-          dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.model + '_' + this.selectedFilters.frequency;
-        } else {
-          dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.model + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
-        }
-        break;
-      case 'wave_climate':
-        // wave climate has only one model, so no model keyword
-        if (this.selectedFilters.frequency === 'extremes') {
-          dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.frequency;
-        } else {
-          dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
-        }
-        break;
-      case 'atmospheric_data':
-        // atmospheric data has multiple variables and multiple statistics per variable
-        dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.variable + '_' + this.selectedFilters.statistic;
-        break;      
-      default:
-        dataId = '';
-        break;
+    if (this.selectedFilters.service == 'flooding') {
+      dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.returnPeriod + '_' + this.selectedFilters.climateScenario + '_' + this.selectedFilters.timeRange;
+      this.fetchFloodMap(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange);
+    } else {
+      switch (this.selectedFilters.service) {
+        case 'sea_level':
+          // sea level has multiple models (CMCC-CM2-VHR4 and EC-Earth3P-HR), so needs model keyword
+          if (this.selectedFilters.frequency === 'extremes') {
+            dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.model + '_' + this.selectedFilters.frequency;
+          } else {
+            dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.model + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
+          }
+          break;
+        case 'wave_climate':
+          // wave climate has only one model, so no model keyword
+          if (this.selectedFilters.frequency === 'extremes') {
+            dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.frequency;
+          } else {
+            dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
+          }
+          break;
+        case 'atmospheric_data':
+          // atmospheric data has multiple variables and multiple statistics per variable
+          dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.variable + '_' + this.selectedFilters.statistic;
+          break;      
+        default:
+          dataId = '';
+          break;
+      }
+      this.fetchImages(this.selectedFilters.city, this.selectedFilters.service, dataId);
     }
     console.log('Data ID:', dataId);
-    this.fetchImages(this.selectedFilters.city, this.selectedFilters.service, dataId);
+    
     // uncomment to switch between images and timeseries
     // if (this.selectedFilters.frequency === 'monthly') {
     //   // this.fetchTimeseries(this.selectedFilters.city, this.selectedFilters.service, dataId);
     // } else {
     //   this.fetchImages(this.selectedFilters.city, this.selectedFilters.service, dataId);
     // }
+
     // update timeseries object as it is used in download button
     this.timeseries = {
       transectId: dataId,
@@ -489,14 +529,17 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
     this.titleTimeseries = service;
     this.selectedServiceDescription = chartDescriptions[service] || 'No description available.';
     switch (service) {
+
       case 'coastal_change':
         dataId = geomId;
         this.fetchImages(city, service, dataId);
         break;
+
       case 'ground_motion':
         dataId = geomId;
         this.fetchImages(city, service, dataId);
         break;
+
       case 'wave_climate':
         this.selectedFilters.city = city;
         this.selectedFilters.service = service;
@@ -507,6 +550,7 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
         dataId = this.selectedFilters.site + '_' + service + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
         this.fetchImages(city, service, dataId);
         break;
+
       case 'sea_level':
         this.selectedFilters.city = city;
         this.selectedFilters.service = service;
@@ -518,6 +562,7 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
         dataId = this.selectedFilters.site + '_' + service + '_' + this.selectedFilters.model + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.frequency;
         this.fetchImages(city, service, dataId);
         break;
+
       case 'atmospheric_data':
         //@ts-ignore
         this.cityService.getActiveServicesForCity(layer.feature.properties.site, service).subscribe((result: any) => {
@@ -540,6 +585,7 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
           this.fetchImages(city, service, dataId);
         })
         break;
+
       default:
         break;
     }
@@ -571,6 +617,12 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
       this.chartDrawer.open();
       this.chartImage = "data:image/png;base64," + image;
     })
+  }
+  fetchFloodMap(city: string, returnPeriod: string, scenario: string, time: string) {
+    this.cityService.getFloodmapImages(city, returnPeriod, scenario, time).subscribe((image: any) => {
+      this.chartDrawer.open();
+      this.chartImage = "data:image/png;base64," + image;
+    });
   }
 
   private processCustomGroundMotionPolygon(geoJson: any, service: string, city: string) {
