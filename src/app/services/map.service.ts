@@ -35,7 +35,7 @@ export class MapService {
     });
 
     map = L.map('map', {
-      layers: [SatelliteMap],
+      layers: [EsriWorldImagery],
       center: [48, 20],
       zoom: 3,
       maxZoom: 20,
