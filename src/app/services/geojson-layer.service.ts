@@ -234,15 +234,17 @@ export class GeojsonLayerService {
         });
       },
       onEachFeature: (feature, layer) => {
+        layer.bindPopup(
+          `${this.capitalAndSpacePipe.transform(service)} ${this.capitalAndSpacePipe.transform(feature.properties.site)}`,
+          { closeButton: false }
+        );
         layer.on('click', () => {
           context.handleLayerClick(city, service, layer as L.Path, feature.properties.name);
         });
         layer.on('mouseover', () => {
           (layer as L.CircleMarker).setStyle({ radius: 15 });
           (layer as L.Path).setStyle({ opacity: 0.5 });
-          layer.bindPopup(this.capitalAndSpacePipe.transform(service), {
-            closeButton: false
-          }).openPopup();
+          layer.openPopup();
         });
         layer.on('mouseout', () => {
           (layer as L.CircleMarker).setStyle({ radius: 8 });
