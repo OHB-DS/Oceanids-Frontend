@@ -37,7 +37,7 @@ export const serviceDescriptions: { [key: string]: string } = {
         '<li><strong>Data Source:</strong> The data is obtained from <a href="https://www.euro-cordex.net/">EURO-CORDEX</a> models (CMCC-CM2-VHR4 and EC-Earth3P-HR) at the closest grid point.</li>' +
         '</ul>',
 
-        'atmospheric_data': '<h3>Atmospheric Data Service</h3>' +
+    'atmospheric_data': '<h3>Atmospheric Data Service</h3>' +
         '<ul>' +
         '<li>Seasonal forecast of atmospheric variables (air temperature, wind gusts, wind speed, relative humidity and total precipitation).</li>' +
         '<li>Future projections (2040-2100) under two different climate scenarios (RCP4.5 and RCP8.5).</li>' +
@@ -46,7 +46,7 @@ export const serviceDescriptions: { [key: string]: string } = {
         '<li><strong>Data Source:</strong> The data is obtained by downscaling the <a href="https://www.euro-cordex.net/">EURO-CORDEX</a> models with in situ station data.</li>' +
         '</ul>',
 
-        'flooding': '<h3>Coastal Flooding Service</h3>' +
+    'coastal_flooding': '<h3>Coastal Flooding Service</h3>' +
         '<ul>' +
         '<li>Coastal flood maps showing expected flooded areas for a given return period event.</li>' +
         '<li>This flood maps show coastal flooding, not pluvial or fluvial flooding</li>' +
@@ -71,8 +71,9 @@ export const chartDescriptions: { [key: string]: string } = {
     'atmospheric_data': 'Seasonal forecast of atmospheric variables (air temperature, wind gusts, wind speed, relative humidity and total precipitation) ' +
         'and future projections (2040-2100) under two different climate scenarios (RCP4.5 and RCP8.5). ',
     
-    'flooding': 'The coastal flood map shows the areas that are expected to be flooded during a specific return period event, ' +
-        'such as a 100-year flood, under the selected climate scenario. This is only for coastal flooding, not pluvial or fluvial flooding.'
+    'coastal_flooding': 'The coastal flood map shows the areas that are expected to be flooded during a specific return period event, ' +
+        'such as a 100-year flood, under the selected climate scenario. This is only for coastal flooding, not pluvial or fluvial flooding ' +
+        '(see https://platform.coclicoservices.eu/).'
 };
 export const defaultValueForSerivces: { [key: string]: string } = {
     'coastal_change': 'coastal_change_transects',
@@ -82,7 +83,7 @@ export const defaultValueForSerivces: { [key: string]: string } = {
     'wave_climate': 'wave_climate_points',
     'sea_level': 'sea_level_points',
     'atmospheric_data': 'atmospheric_data_points',
-    'flooding': 'none',
+    'coastal_flooding': 'none',
 }
 export const defaultValueForTimeseries: { [key: string]: string } = {
     'ground_motion': 'ground_motion_polygon',
