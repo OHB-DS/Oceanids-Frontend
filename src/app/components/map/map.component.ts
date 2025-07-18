@@ -157,8 +157,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined): void {
-    console.log('select')
+  private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined): void {
     if (this.lastSelectedLayer && this.lastSelectedLayer !== layer) {
       (this.lastSelectedLayer as L.Path).setStyle({
         fillOpacity: 0.2,
@@ -216,7 +215,7 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
 
   downloadJpg() {
     console.log(this.selectedFilters);
-    if (this.selectedFilters.service !== 'flooding') {
+    if (this.selectedFilters.service !== 'coastal_flooding') {
       const city = this.timeseries.name;
       const service = this.timeseries.service;
       const dataId = this.timeseries.transectId;
@@ -245,7 +244,7 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
     return this.cityService.getServicesForCity(cityName).pipe(
       tap(data => {
         //@ts-ignore
-        this.cityDataServices = data?.apps_available || [];
+        this.cityDataServices = data?.services_available || [];
       })
     );
   }
@@ -388,8 +387,8 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
               this.geoJsonService.addGeoJsonWavesOrSeaLevelorAtmosphericLayer(result, service, this.cityForm.get('city')?.value, this.drawnItems!, this, this.map!);
               break;
 
-            case 'flooding':
-              // when selecting flooding, only open the line-chart drawer and show the jpeg map
+            case 'coastal_flooding':
+              // when selecting coastal flooding, only open the line-chart drawer and show the jpeg map
               this.selectedServiceDescription = chartDescriptions[service] || 'No description available.';
               this.titleTimeseries = service;
               // fetch the flood map
@@ -474,7 +473,7 @@ private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined)
   onFilterChange(updatedFilters: any) {
     this.selectedFilters = { ...this.selectedFilters, ...updatedFilters };
     let dataId = '';
-    if (this.selectedFilters.service == 'flooding') {
+    if (this.selectedFilters.service == 'coastal_flooding') {
       dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.returnPeriod + '_' + this.selectedFilters.climateScenario + '_' + this.selectedFilters.timeRange;
       this.fetchFloodMap(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange);
     } else {

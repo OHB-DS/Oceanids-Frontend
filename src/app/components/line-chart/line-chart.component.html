@@ -74,7 +74,7 @@
             </mat-button-toggle>
         </mat-button-toggle-group>
     </div>
-    <div *ngIf="dataServiceName === 'flooding'" class="filter-container">
+    <div *ngIf="dataServiceName === 'coastal_flooding'" class="filter-container">
         <mat-button-toggle-group [value]="selectedFilters.returnPeriod"  (change)="updateFilter('returnPeriod', $event.value)"
         [hideSingleSelectionIndicator]="true">
             <div class="filter-title">Return Period</div>
@@ -105,11 +105,11 @@
     </ngx-charts-line-chart> -->
     <img [src]="chartImage" alt="Chart Image" class="chart-image">
     <div class="button-container">
-        <button mat-raised-button color="primary" (click)="downloadCsv()" *ngIf="selectedFilters.frequency !== 'climatology' && dataServiceName !== 'flooding'"
+        <button mat-raised-button color="primary" (click)="downloadCsv()" *ngIf="selectedFilters.frequency !== 'climatology' && dataServiceName !== 'coastal_flooding'"
          class="button-download">
             Download CSV
         </button>
-        <button mat-raised-button style="background-color: #4caf50; color: white;" (click)="downloadTif()" *ngIf="dataServiceName == 'flooding'"
+        <button mat-raised-button style="background-color: #4caf50; color: white;" (click)="downloadTif()" *ngIf="dataServiceName == 'coastal_flooding'"
         class="button-download">
             Download TIFF
         </button>
