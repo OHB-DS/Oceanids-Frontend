@@ -105,6 +105,10 @@
     </ngx-charts-line-chart> -->
     <img [src]="chartImage" alt="Chart Image" class="chart-image">
     <div class="button-container">
+        <button mat-raised-button style="background-color: #3c5ae1; color: white;" (click)="showOnMap()" *ngIf="dataServiceName == 'coastal_flooding'"
+        class="button-download">
+            Show on Map
+        </button>
         <button mat-raised-button color="primary" (click)="downloadCsv()" *ngIf="selectedFilters.frequency !== 'climatology' && dataServiceName !== 'coastal_flooding'"
          class="button-download">
             Download CSV

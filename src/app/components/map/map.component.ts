@@ -214,7 +214,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   downloadJpg() {
-    console.log(this.selectedFilters);
+    console.log('downloadJPG', this.selectedFilters);
     if (this.selectedFilters.service !== 'coastal_flooding') {
       const city = this.timeseries.name;
       const service = this.timeseries.service;
@@ -234,6 +234,11 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cityService.getFloodmapDownload(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange, 'tif').subscribe(res => {
       saveAs(res, `${this.selectedFilters.site}_${this.selectedFilters.service}_${this.selectedFilters.returnPeriod}_${this.selectedFilters.climateScenario}_${this.selectedFilters.timeRange}.tif`);
     });
+  }
+
+  showOnMap() {
+    console.log('showOnMap', this.selectedFilters);
+    this.fetchFloodMapTitiler(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange);
   }
 
   get serviceFormArray() {
@@ -388,17 +393,12 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
               break;
 
             case 'coastal_flooding':
-              // when selecting coastal flooding, only open the line-chart drawer and show the jpeg map
-              this.selectedServiceDescription = chartDescriptions[service] || 'No description available.';
-              this.titleTimeseries = service;
-              // fetch the flood map
-              this.selectedFilters.site = city;
-              this.selectedFilters.service = service;
-              //@ts-ignore
-              this.selectedFilters.timeRange = '2100';
-              this.selectedFilters.returnPeriod = '100';
-              this.selectedFilters.climateScenario = 'SSP245';
-              this.fetchFloodMap(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange);
+              // add colorbar
+              if (document.querySelector('.info.legend')) {
+                this.showColorBar();
+              }
+              // add flood map layer
+              this.geoJsonService.addFloodmapLayer(result, service, this.cityForm.get('city')?.value, this.drawnItems!, this, this.map!);
               break;
 
             default:
@@ -412,9 +412,11 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         if (index !== -1) {
           serviceArray.at(index).patchValue({ selected: false });
           this.cityServices[city].delete(service);
-          if (service === 'coastal_change') {
+          // remove colorbar legends for coastal change, ground motion and flooding
+          if (service === 'coastal_change' || service === 'coastal_flooding') {
             this.hideColorBar();
           }
+          // for ground motion also removing the Drawing tooltip
           else if (service === 'ground_motion') {
             this.mapService.removeDrawToolbar();
             this.hideColorBar();
@@ -424,11 +426,22 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           }
         }
+        // remove existing geojson layers
         this.selectedServiceDescription = '';
         const layersToRemove = this.findLayerByServicesAndName(this.cityForm.get('city')?.value, service);
         layersToRemove.forEach(layer => {
           this.drawnItems!.removeLayer(layer);
         });
+        // remove floodmap layer if it exists
+        if (service === 'coastal_flooding') {
+          if (this.map) {
+            this.map.eachLayer((layer: any) => {
+              if (layer.options && layer.options.layerName === 'floodmap') {
+                this.map!.removeLayer(layer);
+              }
+            });
+          }
+        }
       }
     }
   }
@@ -523,7 +536,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   // uses in code
   private handleLayerClick(city: string, service: string, layer: L.Path, geomId: string) {
-    layer.unbindTooltip();
+    // layer.unbindTooltip();
     let dataId = '';
     this.titleTimeseries = service;
     this.selectedServiceDescription = chartDescriptions[service] || 'No description available.';
@@ -584,6 +597,20 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
           this.fetchImages(city, service, dataId);
         })
         break;
+        
+      case 'coastal_flooding':
+        // when selecting coastal flooding, only open the line-chart drawer and show the jpeg map
+        this.selectedServiceDescription = chartDescriptions[service] || 'No description available.';
+        this.titleTimeseries = service;
+        // fetch the flood map
+        this.selectedFilters.site = city;
+        this.selectedFilters.service = service;
+        //@ts-ignore
+        this.selectedFilters.timeRange = '2100';
+        this.selectedFilters.returnPeriod = '100';
+        this.selectedFilters.climateScenario = 'SSP245';
+        this.fetchFloodMap(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange);
+        break
 
       default:
         break;
@@ -621,6 +648,35 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cityService.getFloodmapImages(city, returnPeriod, scenario, time).subscribe((image: any) => {
       this.chartDrawer.open();
       this.chartImage = "data:image/png;base64," + image;
+    });
+  }
+  fetchFloodMapTitiler(city: string, returnPeriod: string, scenario: string, time: string) {
+    // Remove any existing titilerLayer before adding a new one
+    if (this.map) {
+      this.map.eachLayer((layer: any) => {
+        if (layer.options && layer.options.layerName === 'floodmap') {
+          this.map!.removeLayer(layer);
+        }
+      });
+    }
+
+    this.cityService.getFloodmapXYZ(city, returnPeriod, scenario, time).subscribe((output: any) => {
+      console.log('Titiler url:', output['leaflet_url']);
+      const titilerLayer = L.tileLayer(output['leaflet_url'],
+        {
+          tileSize: 256,
+          minZoom: 8,
+          maxZoom: 22,
+          opacity: 0.7,
+          bounds: output['leaflet_bounds'],
+          attribution: 'TiTiler'
+        }
+      );
+      //@ts-ignore
+      titilerLayer.options.layerName = 'floodmap';
+      titilerLayer.addTo(this.map!);
+      titilerLayer.bringToFront();
+      this.chartDrawer.close();
     });
   }
 

@@ -34,6 +34,7 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
   @Output() downloadCsvButtonClicked = new EventEmitter<void>();
   @Output() downloadJpgButtonClicked = new EventEmitter<void>();
   @Output() downloadTifButtonClicked = new EventEmitter<void>();
+  @Output() showOnMapButtonClicked = new EventEmitter<void>();
   @Input() selectedFilters: any;
   @Output() filterChange = new EventEmitter<any>();
   view: [number, number] = [0, 300];
@@ -59,6 +60,9 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
   }
   downloadTif() {
     this.downloadTifButtonClicked.emit();
+  }
+  showOnMap() {
+    this.showOnMapButtonClicked.emit();
   }
   updateFilter(type: string, value: string) {
     // console.log('updateFilter', type, value);

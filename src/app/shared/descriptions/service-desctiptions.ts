@@ -99,6 +99,7 @@ export const yAxisLabels: { [key: string]: string } = {
 export const legendGrades: { [key: string]: number[] } = {
     'coastal_change': [-100.0, -3.0, -2.0, -1.5, -1.0, -0.5, -0.3, 0.3, 0.5, 1.0, 1.5, 2.0, 3.0, 100.0],
     'ground_motion':  [-100.0, -10.0, -7.5, -5.0, -3.0, -1.0, -0.5, 0.5, 1.0, 3.0, 5.0, 7.5, 10.0, 100.0],
+    'coastal_flooding':  [0, 0.25, 0.5, 0.75, 1, 1.25, 1.5],
 }
 export const legendLabels: { [key: string]: string[] } = {
     'coastal_change': ['&le; -3', '-3', '-2', '-1.5', '-1', '-0.5', '-0.3', '0.3', '0.5', '1', '1.5', '2', '3', '&ge; 3'],
@@ -107,6 +108,7 @@ export const legendLabels: { [key: string]: string[] } = {
 export const legendTitle: { [key: string]: string } = {
     'coastal_change': 'Trend<br>(m / year)',
     'ground_motion': 'Mean Velocity<br>(mm / year)',
+    'coastal_flooding': 'Flood Depth (m)',
 }
 
 export const chartStyles = {
