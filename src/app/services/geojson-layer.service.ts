@@ -269,12 +269,12 @@ export class GeojsonLayerService {
     layerGroup.options.serviceName = service;
     //@ts-ignore
     layerGroup.options.cityName = city;
-    // Find the layer with layerName = 'floodmap' and add it to the group
-    const floodmapLayer = geoJsonData.layers?.find((layer: any) => layer.options?.layerName === 'floodmap');
-    console.log(floodmapLayer);
-    if (floodmapLayer) {
-      layerGroup.addLayer(floodmapLayer);
-    }
+    // add the floodmap layer to the layer group
+    map.eachLayer((layer: any) => {
+      if (layer.options && layer.options.layerName === 'floodmap') {
+        layerGroup.addLayer(layer);
+      }
+    });
     layerGroup.addTo(drawnItems);
     this.addColorBar(map, service);
   }
