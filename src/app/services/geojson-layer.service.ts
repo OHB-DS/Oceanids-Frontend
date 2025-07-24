@@ -14,10 +14,11 @@ export class GeojsonLayerService {
 
   addGeoJsonCoastChangeLayer(geoJsonData: any, coastalLine: any, service: string, city: string, drawnItems: L.FeatureGroup, context: any, map: L.Map) {
     const layerGroup = L.layerGroup();
+    const colorScale = chroma.scale(["red", "white", "blue"]).domain([-3, 3]);
     const geoJsonLayer = L.geoJSON(geoJsonData, {
       style: (feature) => {
         return {
-          color: this.getColorFromValue(feature?.properties.trend),
+          color: colorScale(feature?.properties.trend).toString(),
           weight: 8, 
           opacity: 1
         };
@@ -34,7 +35,7 @@ export class GeojsonLayerService {
         });
         layer.on('mouseout', () => {
           //@ts-ignore
-          (layer as L.Path).setStyle({ weight: 8, color: this.getColorFromValue(feature?.properties.trend), opacity: 1 }); // Reset weight
+          (layer as L.Path).setStyle({ weight: 8, color: colorScale(feature?.properties.trend).toString(), opacity: 1 });
           layer.closePopup();
         });
       }
@@ -261,22 +262,43 @@ export class GeojsonLayerService {
     geoJsonLayer.bringToFront();
     layerGroup.addTo(drawnItems);
   }
-  private getColorFromValue(value: any): string {
-    const scale = chroma.scale(["red", "white", "blue"]).domain([-3, 3]);
-    return scale(value as number).hex();
+  addFloodmapLayer(geoJsonData: any, service: string, city: string, drawnItems: L.FeatureGroup, context: any, map: L.Map) {
+    const layerGroup = L.layerGroup();
+    context.handleLayerClick(city, service, [], context);
+    //@ts-ignore
+    layerGroup.options.serviceName = service;
+    //@ts-ignore
+    layerGroup.options.cityName = city;
+    // add the floodmap layer to the layer group
+    map.eachLayer((layer: any) => {
+      if (layer.options && layer.options.layerName === 'floodmap') {
+        layerGroup.addLayer(layer);
+      }
+    });
+    layerGroup.addTo(drawnItems);
+    this.addColorBar(map, service);
   }
+
+
+
   private addColorBar(map: L.Map, service?: string) {
     // remove any existing colorbar
     const existingLegend = document.querySelector('.info.legend');
     if (existingLegend) {
       existingLegend.remove();  
     }
+    console.log('Adding color bar for service:', service);
     // create a new colorbar control
     const ColorBarControl = L.Control.extend({
       options: {position: 'bottomright',},
       onAdd: function () {
         const div = L.DomUtil.create('div', 'info legend');
-        div.innerHTML = LegendUtils.generateLegend(service || 'defaultService');
+        if (service === 'coastal_flooding') {
+          div.innerHTML = LegendUtils.generateColorbar(service);
+        }
+        else {
+          div.innerHTML = LegendUtils.generateLegend(service || 'defaultService');
+        }
         return div;
       },
     });

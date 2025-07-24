@@ -50,4 +50,6 @@ export class CityService {
     return this.http.get(`${environment.apiUrl}/specific/coastal_flooding/${city}/${returnPeriod}/${scenario}/${time}/${data_type}/download`, 
       {responseType: 'blob'})
   }
+  getFloodmapXYZ(city: string, returnPeriod: string, scenario: string, time: string) {
+    return this.http.get(`${environment.apiUrl}/specific/coastal_flooding/${city}/${returnPeriod}/${scenario}/${time}/xyz`)}  
 }
