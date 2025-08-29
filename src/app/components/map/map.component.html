@@ -1,42 +1,51 @@
-<div style="display: flex; height: 100vh; flex-direction: column;">
-
+<div style="display: flex; height: 100vh; flex-direction: column">
   <mat-drawer-container>
-
     <!-- Analysis panel -->
     <mat-drawer class="chart-drawer" #chartDrawer position="end" mode="over">
-      <app-line-chart *ngIf="timeseries" [multi]="[timeseries]" [dataServiceName]="titleTimeseries"
-        [description]="selectedServiceDescription" 
+      <app-line-chart
+        *ngIf="timeseries"
+        [multi]="[timeseries]"
+        [dataServiceName]="titleTimeseries"
+        [description]="selectedServiceDescription"
         (downloadCsvButtonClicked)="downloadCsv()"
         (downloadJpgButtonClicked)="downloadJpg()"
         (downloadTifButtonClicked)="downloadTif()"
         (showOnMapButtonClicked)="showOnMap()"
-        [selectedFilters]="selectedFilters" (filterChange)="onFilterChange($event)"
-        [activeTabs]="activeTabs" [chartImage]="chartImage">
+        [selectedFilters]="selectedFilters"
+        (filterChange)="onFilterChange($event)"
+        [activeTabs]="activeTabs"
+        [chartImage]="chartImage"
+      >
       </app-line-chart>
     </mat-drawer>
 
     <!-- Map panel -->
-    <mat-drawer-content style="display: flex; flex-direction: column;">
+    <mat-drawer-content style="display: flex; flex-direction: column">
       <div class="map-frame">
-        <div class="map" id="map"> 
-
+        <div class="map" id="map">
           <!-- Menu panels -->
           <div class="panel-container">
             <form [formGroup]="cityForm">
-              <mat-accordion (dblclick)="$event.stopPropagation()"> 
-
+              <mat-accordion (dblclick)="$event.stopPropagation()">
                 <!-- Cities panel   -->
                 <mat-expansion-panel #citiesPanel>
                   <mat-expansion-panel-header>
                     <mat-panel-title>
-                      {{cityForm.get('city')?.value ? cityForm.get('city')?.value : 'Location'}}
+                      {{
+                        cityForm.get("city")?.value
+                          ? cityForm.get("city")?.value
+                          : "Location"
+                      }}
                     </mat-panel-title>
                   </mat-expansion-panel-header>
                   <mat-panel-description>
                     <mat-form-field>
                       <mat-label>Select Location</mat-label>
                       <mat-select formControlName="city">
-                        <mat-option *ngFor="let city of cityNames" [value]="city">
+                        <mat-option
+                          *ngFor="let city of cityNames"
+                          [value]="city"
+                        >
                           {{ city }}
                         </mat-option>
                       </mat-select>
@@ -45,22 +54,33 @@
                 </mat-expansion-panel>
 
                 <!-- Data Services panel   -->
-                <mat-expansion-panel #dataServicesPanel [disabled]="!cityForm.get('city')?.value">
+                <mat-expansion-panel
+                  #dataServicesPanel
+                  [disabled]="!cityForm.get('city')?.value"
+                >
                   <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      Data services
-                    </mat-panel-title>
+                    <mat-panel-title> Data services </mat-panel-title>
                   </mat-expansion-panel-header>
                   <div formArrayName="service">
-                    <div *ngFor="let serviceGroup of serviceFormArray.controls; let i = index" [formGroupName]="i"
-                      style="display: flex;">
-                      <mat-checkbox [formControlName]="'selected'"
-                        (change)="onCheckboxChange($event, cityDataServices[i])">
+                    <div
+                      *ngFor="
+                        let serviceGroup of serviceFormArray.controls;
+                        let i = index
+                      "
+                      [formGroupName]="i"
+                      style="display: flex"
+                    >
+                      <mat-checkbox
+                        [formControlName]="'selected'"
+                        (change)="onCheckboxChange($event, cityDataServices[i])"
+                      >
                       </mat-checkbox>
                       <span class="checkbox-label">
-                        {{ serviceGroup.get('name')?.value | capitalAndSpace }}
+                        {{ serviceGroup.get("name")?.value | capitalAndSpace }}
                         <span class="info-icon">
-                          <mat-icon (click)="showInfo(cityDataServices[i])">info</mat-icon>
+                          <mat-icon (click)="showInfo(cityDataServices[i])"
+                            >info</mat-icon
+                          >
                         </span>
                       </span>
                     </div>
@@ -70,13 +90,14 @@
                 <!-- Decision Support panel   -->
                 <mat-expansion-panel>
                   <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      Decision Support
-                    </mat-panel-title>
+                    <mat-panel-title> Decision Support </mat-panel-title>
                   </mat-expansion-panel-header>
-                  <p>another panel.</p>
+                  <section class="dss-options">
+                    <app-dss-panel
+                      [selectedCity]="cityForm.get('city')?.value || ''"
+                    ></app-dss-panel>
+                  </section>
                 </mat-expansion-panel>
-
               </mat-accordion>
             </form>
           </div>

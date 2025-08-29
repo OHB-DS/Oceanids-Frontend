@@ -42,6 +42,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
+import { DssPanelComponent } from './components/dss-panel/dss-panel.component';
 
 // function initializeKeycloak(keycloak: KeycloakService) {
 //   return () =>
@@ -67,8 +68,8 @@ import { FooterComponent } from './components/footer/footer.component';
     MapComponent,
     LineChartComponent,
     CapitalAndSpacePipe,
-    DescriptionSnackbarComponent
-
+    DescriptionSnackbarComponent,
+    DssPanelComponent,
   ],
   imports: [
     BrowserModule,

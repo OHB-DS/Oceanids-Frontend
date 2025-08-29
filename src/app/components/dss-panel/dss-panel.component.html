@@ -1,0 +1,21 @@
+<div class="dss-panel-tab">
+  <div class="dss-fileds" *ngIf="selectedCity">
+    <div class="dss-field" id="city">
+      Area:
+      <span class="dss-field-value">
+        {{ selectedCity }}
+      </span>
+    </div>
+    <!-- <div class="dss-field" id="scenario">
+        Scenario:
+        <select class="dss-field-value">
+            <option *ngFor="let scenario of scenarios" [value]="scenario">
+                {{ scenario }}
+            {{ selectedCity.scenario || 'Default' }}
+        </span>
+    </div> -->
+  </div>
+  <span class="no-city-message" *ngIf="!selectedCity">
+    Select a city or port first.
+  </span>
+</div>
