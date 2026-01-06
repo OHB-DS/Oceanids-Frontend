@@ -9,4 +9,5 @@ export interface chartFilter {
     statistic: string,
     returnPeriod: string,
     climateScenario: string,
+    availableTabs: any
 };

@@ -77,9 +77,13 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
 
     } else if (type === 'statistic') {
       this.selectedFilters.statistic = value;
+
+    } else if (type === 'timeRange') {
+      this.selectedFilters.timeRange = value;
+      this.activeTabs = this.selectedFilters.availableTabs[this.selectedFilters.timeRange];
     }
 
-    this.filterChange.emit({ [type]: value });
+    this.filterChange.emit({ [type]: value, activeTabs: this.activeTabs });
   }
 
   onTimeSeriesUpdated(data: any) {
@@ -88,5 +92,8 @@ export class LineChartComponent implements OnInit, OnChanges, AfterViewInit {
   
   isTabEnabled(variable: string, statistic: string): boolean {
     return this.activeTabs[variable]?.includes(statistic);
+  }
+  isProjectionAvailable(timeRange: string): boolean {
+    return Object.keys(this.selectedFilters.availableTabs)?.includes(timeRange);
   }
 }

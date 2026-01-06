@@ -481,6 +481,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     statistic: '',
     returnPeriod: '',
     climateScenario: '',
+    availableTabs: {},
   };
 
   onFilterChange(updatedFilters: any) {
@@ -509,7 +510,11 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
           break;
         case 'atmospheric_data':
           // atmospheric data has multiple variables and multiple statistics per variable
-          dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.variable + '_' + this.selectedFilters.statistic;
+          if (this.selectedFilters.timeRange === 'seasonal') {
+            dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.variable + '_' + this.selectedFilters.statistic;
+          } else {
+            dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.timeRange + '_' + this.selectedFilters.variable + '_' + this.selectedFilters.statistic;
+          }
           break;      
         default:
           dataId = '';
@@ -517,14 +522,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.fetchImages(this.selectedFilters.city, this.selectedFilters.service, dataId);
     }
-    console.log('Data ID:', dataId);
-    
-    // uncomment to switch between images and timeseries
-    // if (this.selectedFilters.frequency === 'monthly') {
-    //   // this.fetchTimeseries(this.selectedFilters.city, this.selectedFilters.service, dataId);
-    // } else {
-    //   this.fetchImages(this.selectedFilters.city, this.selectedFilters.service, dataId);
-    // }
 
     // update timeseries object as it is used in download button
     this.timeseries = {
@@ -578,12 +575,14 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'atmospheric_data':
         //@ts-ignore
         this.cityService.getActiveServicesForCity(layer.feature.properties.site, service).subscribe((result: any) => {
-          this.activeTabs = result;
-          // console.log(this.activeTabs)
           this.selectedFilters.city = city;
           this.selectedFilters.service = service;
+          this.selectedFilters.timeRange = 'seasonal';
           //@ts-ignore
           this.selectedFilters.site = layer.feature.properties.site;
+          this.selectedFilters.availableTabs = result;
+          // split into seasonal and projection
+          this.activeTabs = result[this.selectedFilters.timeRange];
           const availableVariables = Object.keys(this.activeTabs);
           if (availableVariables.length > 0) {
             const firstVariable = availableVariables[0];
