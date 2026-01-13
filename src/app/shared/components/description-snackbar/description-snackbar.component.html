@@ -1,6 +1,13 @@
-<div class="snackbar-content">
-    <span [innerHTML]="data"></span>
-    <button mat-icon-button (click)="close()" aria-label="Close" class="close-btn">
-        <mat-icon>close</mat-icon>
-    </button>
+<div class="snackbar-content" role="status" aria-live="polite">
+  <div class="snackbar-body">
+    <span class="snackbar-text" [innerHTML]="data"></span>
+  </div>
+
+  <button
+    mat-icon-button
+    (click)="close()"
+    aria-label="Close"
+    class="close-btn">
+    <mat-icon>close</mat-icon>
+  </button>
 </div>
