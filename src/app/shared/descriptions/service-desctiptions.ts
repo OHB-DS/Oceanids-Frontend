@@ -40,10 +40,10 @@ export const serviceDescriptions: { [key: string]: string } = {
     'atmospheric_data': '<h2>Atmospheric Data Service</h2>' +
         '<ul>' +
         '<li>Seasonal forecast of atmospheric variables (air temperature, wind gusts, wind speed, relative humidity and total precipitation).</li>' +
-        '<li>Future projections (2040-2100) under two different climate scenarios (RCP4.5 and RCP8.5).</li>' +
-        '<li>The seasonal forecast is provided at a daily timescale for the next 6 months.</li>' +
+        '<li>The seasonal forecast is provided at a daily timescale for the next 6 months, >strong>updated on the 8th of every month</strong>.</li>' +
+        '<li>Future projections (2012-2100) under two different climate scenarios (RCP4.5 and RCP8.5).</li>' +
         '<li>It aids in the development of adaptation strategies for cities and ports.</li>' +
-        '<li><strong>Data Source:</strong> The data is obtained by downscaling the <a href="https://www.euro-cordex.net/">EURO-CORDEX</a> models with in situ station data.</li>' +
+        '<li><strong>Data Source:</strong> The data is obtained by downscaling the <a href="https://www.euro-cordex.net/">EURO-CORDEX</a> models with in situ weather stations.</li>' +
         '</ul>',
 
     'coastal_flooding': '<h2>Coastal Flooding Service</h2>' +
@@ -69,7 +69,7 @@ export const chartDescriptions: { [key: string]: string } = {
         'and future projections (2015-2050) using two different climate models. ',
         
     'atmospheric_data': 'Seasonal forecast of atmospheric variables (air temperature, wind gusts, wind speed, relative humidity and total precipitation) ' +
-        'and future projections (2040-2100) under two different climate scenarios (RCP4.5 and RCP8.5). ',
+        'and future projections (2012-2100) under two different climate scenarios (RCP4.5 and RCP8.5). ',
     
     'coastal_flooding': 'The coastal flood map shows the areas that are expected to be flooded during a specific return period event, ' +
         'such as a 100-year flood, under the selected climate scenario. This is only for coastal flooding, not pluvial or fluvial flooding ' +
