@@ -1,18 +1,66 @@
+:host {
+  display: block;
+}
+
 .snackbar-content {
     display: flex;
-    justify-content: space-between;
     align-items: flex-start;
-    width: 100%;
-    font-size: 2vh;
+    justify-content: space-between;
+    gap: 12px;
+    background: #ffffff;
+    color: #000000;
+    padding: 14px 14px;
+    border-radius: 10px;
+    max-width: 30vw;
+    max-height: 50vh;
+    overflow: auto;
+}
+
+.snackbar-body {
+  min-width: 0; // allow wrapping in flex
+}
+
+.snackbar-text {
+  display: block;
+  font-size: 2vh;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.snackbar-body h2 {
+  margin: 0 0 8px 0;
+  font-size: 1.4vh;
+  font-weight: 600;
+  color: #000000;
+}
+
+// .snackbar-text :is(h1, h2, h3, h4) {
+//   margin: 0 0 8px 0;
+//   font-size: 1.75vh;
+//   font-weight: 600;
+//   color: #000;
+// }
+
+.snackbar-text ul {
+  margin: 8px 0 0 18px;
+  padding: 0;
+}
+
+.snackbar-text li {
+  margin: 6px 0;
+}
+
+.snackbar-text a {
+  color: #0b57d0;
+  text-decoration: underline;
 }
 
 .close-btn {
-    background: none;
-    border: none;
-    padding: 0;
+  flex: 0 0 auto;
+  margin: -4px -4px 0 0; // tuck into corner slightly
+  color: #000;
 }
 
-.mat-icon {
-    color: white;
-    font-size: 2vh;
+.close-btn mat-icon {
+  color: #000;
 }

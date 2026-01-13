@@ -38,6 +38,19 @@
         </div>
     </div>
     <div *ngIf="dataServiceName === 'atmospheric_data'" class="filter-container">
+        <mat-button-toggle-group [value]="selectedFilters.timeRange"  (change)="updateFilter('timeRange', $event.value)"
+        [hideSingleSelectionIndicator]="true">
+            <div class="filter-title">Timeframe</div>
+            <mat-button-toggle value="seasonal" [disabled]="!isProjectionAvailable('seasonal')">
+                Seasonal Forecast
+            </mat-button-toggle>
+            <mat-button-toggle value="rcp45" [disabled]="!isProjectionAvailable('rcp45')">
+                RCP4.5 (2040-2100)
+            </mat-button-toggle>
+            <mat-button-toggle value="rcp85" [disabled]="!isProjectionAvailable('rcp85')">
+                RCP8.5 (2040-2100)
+            </mat-button-toggle>
+        </mat-button-toggle-group>
         <mat-button-toggle-group [value]="selectedFilters.variable"  (change)="updateFilter('variable', $event.value)"
         [hideSingleSelectionIndicator]="true">
             <div class="filter-title">Variable</div>
