@@ -45,10 +45,10 @@
                 Seasonal Forecast
             </mat-button-toggle>
             <mat-button-toggle value="rcp45" [disabled]="!isProjectionAvailable('rcp45')">
-                RCP4.5 (2040-2100)
+                RCP4.5 (2012-2100)
             </mat-button-toggle>
             <mat-button-toggle value="rcp85" [disabled]="!isProjectionAvailable('rcp85')">
-                RCP8.5 (2040-2100)
+                RCP8.5 (2012-2100)
             </mat-button-toggle>
         </mat-button-toggle-group>
         <mat-button-toggle-group [value]="selectedFilters.variable"  (change)="updateFilter('variable', $event.value)"
