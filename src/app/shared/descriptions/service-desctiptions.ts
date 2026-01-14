@@ -41,7 +41,7 @@ export const serviceDescriptions: { [key: string]: string } = {
         '<ul>' +
         '<li>Seasonal forecast of atmospheric variables (air temperature, wind gusts, wind speed, relative humidity and total precipitation).</li>' +
         '<li>The seasonal forecast is provided at a daily timescale for the next 6 months, >strong>updated on the 8th of every month</strong>.</li>' +
-        '<li>Future projections (2012-2100) under two different climate scenarios (RCP4.5 and RCP8.5).</li>' +
+        '<li>Future projections (2012-2100) under two different climate scenarios (RCP4.5 and RCP8.5). 7 model simulations are provided.</li>' +
         '<li>It aids in the development of adaptation strategies for cities and ports.</li>' +
         '<li><strong>Data Source:</strong> The data is obtained by downscaling the <a href="https://www.euro-cordex.net/">EURO-CORDEX</a> models with in situ weather stations.</li>' +
         '</ul>',
@@ -49,6 +49,7 @@ export const serviceDescriptions: { [key: string]: string } = {
     'coastal_flooding': '<h2>Coastal Flooding Service</h2>' +
         '<ul>' +
         '<li>Coastal flood maps showing expected flooded areas for a given return period event.</li>' +
+        '<li>To show the flood map for a different combination of return period and climate scenario, you need to untick and tick again the data service.</li>' +
         '<li>This flood maps show coastal flooding, not pluvial or fluvial flooding</li>' +
         '<li><strong>Data Source:</strong> The data is obtained directly from the <a href="https://platform.coclicoservices.eu/">CoCliCo services</a></li>' +
         '</ul>'
