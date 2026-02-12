@@ -29,7 +29,7 @@ export class GeojsonLayerService {
         });
         layer.on('mouseover', () => {
           (layer as L.Path).setStyle({ weight: 12, color: 'yellow'});
-          layer.bindPopup(`Name: ${feature.properties.name}<br>Trend: ${feature.properties.trend} m/year`, {
+          layer.bindPopup(`${feature.properties.name}<br>Trend: ${feature.properties.trend} m/year`, {
             autoClose: true
           }).openPopup();
         });
@@ -42,9 +42,19 @@ export class GeojsonLayerService {
     });
     const coastLineLayer = L.geoJSON(coastalLine, {
       style: {
-        color: 'black',
-        weight: 3,
-        opacity: 1
+      color: 'black',
+      weight: 3,
+      opacity: 1
+      },
+      onEachFeature: (feature, layer) => {
+      layer.on('mouseover', () => {
+        (layer as L.Path).setStyle({ weight: 6 }); // Thicker on hover
+        layer.bindPopup(`${feature.properties.name}`, { autoClose: true }).openPopup();
+      });
+      layer.on('mouseout', () => {
+        (layer as L.Path).setStyle({ weight: 3 }); // Back to normal
+        layer.closePopup();
+      });
       }
     });
     //@ts-ignore
