@@ -208,6 +208,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     const city = this.timeseries.name;
     const service = this.timeseries.service;
     const dataId = this.timeseries.transectId;
+    console.log('downloadCsv', dataId);
     this.cityService.getTimeseriesCsv(city, service, dataId).subscribe(res => {
       saveAs(res, `${dataId}.csv`);
     });
@@ -531,7 +532,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       series: []
     };
   }
-  // uses in code
+
   private handleLayerClick(city: string, service: string, layer: L.Path, geomId: string) {
     // layer.unbindTooltip();
     let dataId = '';
@@ -594,7 +595,14 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           dataId = this.selectedFilters.site + '_' + this.selectedFilters.service + '_' + this.selectedFilters.variable + '_' + this.selectedFilters.statistic;
           this.fetchImages(city, service, dataId);
-        })
+          // update timeseries object asynchronosly as is it used in download button
+          this.timeseries = {
+            transectId: dataId,
+            service: service,
+            name: city,
+            series: [] // Optionally populate this with actual data if available
+          };
+        });
         break;
         
       case 'coastal_flooding':
@@ -614,7 +622,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       default:
         break;
     }
-    // populate this.timeseries for later use in the download button
     this.timeseries = {
       transectId: dataId,
       service: service,
