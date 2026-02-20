@@ -24,10 +24,18 @@ if ! command -v npm >/dev/null 2>&1; then
 	nvm use 20
 fi
 
+rm -rf node_modules
+
 if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
-	npm ci
+	npm ci --no-audit --no-fund || {
+		rm -rf node_modules
+		npm ci --no-audit --no-fund
+	}
 else
-	npm install
+	npm install --no-audit --no-fund || {
+		rm -rf node_modules
+		npm install --no-audit --no-fund
+	}
 fi
 
 npm run build
