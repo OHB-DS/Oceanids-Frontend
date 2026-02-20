@@ -38,4 +38,6 @@ else
 	}
 fi
 
-npm run build
+# Build output for EDITO static serving
+mkdir -p site
+npm run build -- --configuration production --output-path site
