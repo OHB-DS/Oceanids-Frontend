@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$REPO_ROOT"
+
 if ! command -v npm >/dev/null 2>&1; then
 	export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
 
@@ -21,5 +24,10 @@ if ! command -v npm >/dev/null 2>&1; then
 	nvm use 20
 fi
 
-npm ci
+if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
+	npm ci
+else
+	npm install
+fi
+
 npm run build
