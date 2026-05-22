@@ -14,7 +14,13 @@ export class AppComponent {
   userRoles: string[] = [];
   userFirstName: string = '';
   loading$ = new Observable<boolean>();
+  showInstructionsModal = true;
+
   constructor(public loader: LoadingService, private readonly keycloak: KeycloakService) {
     this.loading$ = this.loader.loading$
+  }
+
+  closeInstructionsModal(): void {
+    this.showInstructionsModal = false;
   }
 }

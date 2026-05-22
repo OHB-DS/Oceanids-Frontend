@@ -39,6 +39,21 @@ body {
     right: 1vw;
 }
 
+.leaflet-bottom.leaflet-right {
+    bottom: 1vh;
+    right: 1vw;
+}
+
+.leaflet-bottom.leaflet-right .info.legend {
+    margin: 0;
+}
+
+.leaflet-bottom.leaflet-right .flood-legend {
+    position: absolute;
+    right: 5vh;
+    bottom: 0;
+}
+
 .legend i {
     width: 1vh; /* Increased width of symbols */
     height: 1vh; /* Increased height of symbols */
@@ -58,6 +73,65 @@ body {
     font-size: 1.5vh; /* Increased font size for labels */
     line-height: 0.1; /* Improved line spacing */
     color: white; /* Changed label color to white */
+}
+
+.flood-colorbar {
+    display: flex;
+    align-items: center;
+    height: 2.6vh;
+}
+
+.flood-colorbar__segment {
+    width: 1.8vh;
+    height: 1.8vh;
+    flex: 1 1 auto;
+}
+
+.flood-colorbar__ticks {
+    position: relative;
+    height: 4.6vh;
+}
+
+.flood-colorbar__tick {
+    position: absolute;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.flood-colorbar__mark {
+    width: 0.2vh;
+    height: 0.8vh;
+    background: white;
+    display: block;
+    margin-bottom: 0.2vh;
+}
+
+.flood-colorbar__label {
+    font-size: 1.3vh;
+    color: white;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+@media screen and (max-width: 768px) {
+    .flood-colorbar {
+        height: 2.2vh;
+    }
+
+    .flood-colorbar__segment {
+        width: 1.5vh;
+        height: 1.5vh;
+    }
+
+    .flood-colorbar__ticks {
+        height: 3.8vh;
+    }
+
+    .flood-colorbar__label {
+        font-size: 1.1vh;
+    }
 }
 
 .custom-form-field .mat-form-field-wrapper {

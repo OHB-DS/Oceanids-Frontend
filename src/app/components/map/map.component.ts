@@ -39,6 +39,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   timeseries: Timeseries;
   selectedServiceDescription: string = '';
   titleTimeseries: string = '';
+  showFloodLayerMenu = false;
   private selectedPolygon: L.Layer | null = null; // track the currently selected polygon
   private lastSelectedLayer: L.Layer | null = null;
   private cityPopups: { [cityName: string]: L.Popup } = {};
@@ -84,6 +85,10 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         const cityAOI = data.AOIs[cityName];
         this.cityNames.push(cityName);
         const geoJsonLayer = L.geoJSON(cityAOI, {
+          style: () => ({
+            fillOpacity: this.getCityFillOpacity(cityName),
+            weight: 3,
+          }),
           onEachFeature: (feature, layer) => {
 
             // store the popup for the city
@@ -160,7 +165,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   private selectCity(cityName: string, layer: L.Layer, popup: L.Popup | undefined): void {
     if (this.lastSelectedLayer && this.lastSelectedLayer !== layer) {
       (this.lastSelectedLayer as L.Path).setStyle({
-        fillOpacity: 0.2,
+        fillOpacity: this.getCityFillOpacity((this.lastSelectedLayer as any).cityName),
         color: '#3388ff',
         weight: 3
       });
@@ -204,6 +209,10 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  private getCityFillOpacity(cityName: string | undefined): number {
+    return cityName === 'Crete' ? 0 : 0.2;
+  }
+
   downloadCsv() {
     const city = this.timeseries.name;
     const service = this.timeseries.service;
@@ -239,7 +248,29 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   showOnMap() {
     console.log('showOnMap', this.selectedFilters);
+    this.showFloodLayerMenu = this.selectedFilters.service === 'coastal_flooding';
+    this.chartDrawer.close();
     this.fetchFloodMapTitiler(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange);
+  }
+
+  updateFloodLayerFilter(filterName: 'returnPeriod' | 'climateScenario' | 'timeRange', value: string): void {
+    this.selectedFilters = {
+      ...this.selectedFilters,
+      [filterName]: value,
+    };
+    if (this.showFloodLayerMenu && this.selectedFilters.service === 'coastal_flooding') {
+      this.chartDrawer.close();
+      this.fetchFloodMapTitiler(
+        this.selectedFilters.site,
+        this.selectedFilters.returnPeriod,
+        this.selectedFilters.climateScenario,
+        this.selectedFilters.timeRange
+      );
+    }
+  }
+
+  hideFloodLayerMenu(): void {
+    this.showFloodLayerMenu = false;
   }
 
   get serviceFormArray() {
@@ -435,6 +466,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         });
         // remove floodmap layer if it exists
         if (service === 'coastal_flooding') {
+          this.showFloodLayerMenu = false;
           if (this.map) {
             this.map.eachLayer((layer: any) => {
               if (layer.options && layer.options.layerName === 'floodmap') {
@@ -541,16 +573,19 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     switch (service) {
 
       case 'coastal_change':
+        this.showFloodLayerMenu = false;
         dataId = geomId;
         this.fetchImages(city, service, dataId);
         break;
 
       case 'ground_motion':
+        this.showFloodLayerMenu = false;
         dataId = geomId;
         this.fetchImages(city, service, dataId);
         break;
 
       case 'wave_climate':
+        this.showFloodLayerMenu = false;
         this.selectedFilters.city = city;
         this.selectedFilters.service = service;
         //@ts-ignore
@@ -562,6 +597,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
 
       case 'sea_level':
+        this.showFloodLayerMenu = false;
         this.selectedFilters.city = city;
         this.selectedFilters.service = service;
         //@ts-ignore
@@ -574,6 +610,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
 
       case 'atmospheric_data':
+        this.showFloodLayerMenu = false;
         //@ts-ignore
         this.cityService.getActiveServicesForCity(layer.feature.properties.site, service).subscribe((result: any) => {
           this.selectedFilters.city = city;
@@ -606,17 +643,18 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
         
       case 'coastal_flooding':
-        // when selecting coastal flooding, only open the line-chart drawer and show the jpeg map
         this.selectedServiceDescription = chartDescriptions[service] || 'No description available.';
         this.titleTimeseries = service;
-        // fetch the flood map
+        this.showFloodLayerMenu = true;
         this.selectedFilters.site = city;
+        this.selectedFilters.city = city;
         this.selectedFilters.service = service;
         //@ts-ignore
         this.selectedFilters.timeRange = '2100';
         this.selectedFilters.returnPeriod = '100';
         this.selectedFilters.climateScenario = 'SSP245';
-        this.fetchFloodMap(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange);
+        this.chartDrawer.close();
+        this.fetchFloodMapTitiler(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange);
         break
 
       default:

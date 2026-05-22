@@ -302,7 +302,8 @@ export class GeojsonLayerService {
     const ColorBarControl = L.Control.extend({
       options: {position: 'bottomright',},
       onAdd: function () {
-        const div = L.DomUtil.create('div', 'info legend');
+        const legendClass = service === 'coastal_flooding' ? 'info legend flood-legend' : 'info legend';
+        const div = L.DomUtil.create('div', legendClass);
         if (service === 'coastal_flooding') {
           div.innerHTML = LegendUtils.generateColorbar(service);
         }

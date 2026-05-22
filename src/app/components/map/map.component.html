@@ -20,6 +20,45 @@
       <div class="map-frame">
         <div class="map" id="map"> 
 
+          <section *ngIf="showFloodLayerMenu && selectedFilters.service === 'coastal_flooding'" class="flood-layer-menu">
+            <div class="flood-layer-menu__header">
+              <div>
+                <h3>Coastal Flooding Layers</h3>
+                <p>Adjust the filters here and the map layer updates directly.</p>
+              </div>
+            </div>
+            <p class="flood-layer-menu__description">{{ selectedServiceDescription }}</p>
+            <div class="flood-layer-menu__controls">
+              <mat-button-toggle-group [value]="selectedFilters.returnPeriod"
+                (change)="updateFloodLayerFilter('returnPeriod', $event.value)" [hideSingleSelectionIndicator]="true">
+                <div class="flood-layer-menu__label">Return Period</div>
+                <mat-button-toggle value="1">1 year</mat-button-toggle>
+                <mat-button-toggle value="100">100 years</mat-button-toggle>
+                <mat-button-toggle value="1000">1000 years</mat-button-toggle>
+              </mat-button-toggle-group>
+
+              <mat-button-toggle-group [value]="selectedFilters.climateScenario"
+                (change)="updateFloodLayerFilter('climateScenario', $event.value)" [hideSingleSelectionIndicator]="true">
+                <div class="flood-layer-menu__label">Climate Scenario</div>
+                <mat-button-toggle value="None">None</mat-button-toggle>
+                <mat-button-toggle value="SSP245">RCP4.5</mat-button-toggle>
+                <mat-button-toggle value="SSP585">RCP8.5</mat-button-toggle>
+              </mat-button-toggle-group>
+
+              <mat-button-toggle-group [value]="selectedFilters.timeRange"
+                (change)="updateFloodLayerFilter('timeRange', $event.value)" [hideSingleSelectionIndicator]="true">
+                <div class="flood-layer-menu__label">Time Period</div>
+                <mat-button-toggle value="2010">2010</mat-button-toggle>
+                <mat-button-toggle value="2050">2050</mat-button-toggle>
+                <mat-button-toggle value="2100">2100</mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
+            <div class="flood-layer-menu__actions">
+              <button mat-raised-button type="button" class="flood-layer-menu__button flood-layer-menu__button--tiff" (click)="downloadTif()">Download TIFF</button>
+              <button mat-raised-button type="button" class="flood-layer-menu__button flood-layer-menu__button--jpg" (click)="downloadJpg()">Download JPG</button>
+            </div>
+          </section>
+
           <!-- Menu panels -->
           <div class="panel-container">
             <form [formGroup]="cityForm">

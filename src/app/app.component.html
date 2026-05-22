@@ -1,6 +1,30 @@
 <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="medium" color="#fff" type="ball-spin-clockwise-fade"
     [fullScreen]="true"></ngx-spinner>
 
+<div *ngIf="showInstructionsModal" class="instructions-modal-backdrop" (click)="closeInstructionsModal()">
+    <section class="instructions-modal" role="dialog" aria-modal="true" aria-labelledby="instructions-modal-title"
+        (click)="$event.stopPropagation()">
+        <button type="button" class="instructions-close" aria-label="Close instructions" (click)="closeInstructionsModal()">
+            <mat-icon>close</mat-icon>
+        </button>
+        <h3 id="instructions-modal-title">Welcome to the Oceanids Coastal Resilience Platform 🌊</h3>
+        <p>
+            Explore coastal indicators for each site, compare outputs interactively, and download ready-to-use figures for reports 📊
+        </p>
+        <ul>
+            <li>📍 First select a site from the Location menu on the map.</li>
+            <li>🧭 Then choose one or more data services: Coastal Change, Ground Motion, Wave Climate, Sea Level, Atmospheric Data, or Coastal Flooding.</li>
+            <li>🗺️ Click the available map features to visualise the outputs interactively and adjust filters where available.</li>
+            <li>ℹ️ Use the Information button to read more about each service and its methodology.</li>
+            <li>📦 Download the raw data for further analysis as CSV, GeoJSON, or TIFF.</li>
+            <li>🖼️ Download a JPG from the analysis panel when you want to include the output in a report.</li>
+        </ul>
+        <div class="instructions-actions">
+            <button mat-raised-button color="primary" type="button" (click)="closeInstructionsModal()">Let&apos;s go</button>
+        </div>
+    </section>
+</div>
+
 <!-- Add the header component -->
 <app-header></app-header>
 

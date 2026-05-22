@@ -27,3 +27,104 @@ button.disabled {
 .chart-legend {
     display: block !important;
 }
+
+.instructions-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(12px, 2vw, 24px);
+    background: rgba(8, 17, 31, 0.72);
+}
+
+.instructions-modal {
+    position: relative;
+    width: min(92vw, 46rem);
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: clamp(18px, 2.5vw, 28px) clamp(18px, 2.5vw, 28px) clamp(18px, 2.2vw, 24px);
+    border-radius: clamp(12px, 1.5vw, 16px);
+    background: linear-gradient(180deg, #f8fbff 0%, #eef6ff 100%);
+    box-shadow: 0 clamp(18px, 3vw, 24px) clamp(36px, 7vw, 64px) rgba(8, 17, 31, 0.28);
+    color: #16304d;
+}
+
+.instructions-modal h3 {
+    margin: 0 clamp(24px, 3vw, 32px) clamp(12px, 2vw, 16px) 0;
+    font-size: 2.8vh;
+    line-height: 1.2;
+}
+
+.instructions-modal p {
+    margin: 0 0 clamp(12px, 2vw, 16px);
+    font-size: 1.8vh;
+    line-height: 1.6;
+}
+
+.instructions-modal ul {
+    margin: 0;
+    padding-left: clamp(18px, 2.5vw, 20px);
+    display: grid;
+    gap: clamp(8px, 1.5vw, 10px);
+}
+
+.instructions-modal li {
+    font-size: 1.8vh;
+    line-height: 1.5;
+}
+
+.instructions-modal .mat-icon {
+    font-size: 1.8vh;
+    width: 1.8vh;
+    height: 1.8vh;
+}
+
+.instructions-modal a {
+    color: #0059b3;
+}
+
+.instructions-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: clamp(18px, 2.5vw, 24px);
+}
+
+.instructions-actions .mat-mdc-raised-button {
+    font-size: 1.8vh;
+}
+
+.instructions-close {
+    position: absolute;
+    top: clamp(10px, 1.5vw, 12px);
+    right: clamp(10px, 1.5vw, 12px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(32px, 4vw, 36px);
+    height: clamp(32px, 4vw, 36px);
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #16304d;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+    .instructions-modal {
+        width: min(94vw, 34rem);
+        max-height: 84vh;
+    }
+
+    .instructions-modal h3 {
+        font-size: 2.4vh;
+    }
+
+    .instructions-modal p,
+    .instructions-modal li,
+    .instructions-actions .mat-mdc-raised-button,
+    .instructions-modal .mat-icon {
+        font-size: 1.6vh;
+    }
+}

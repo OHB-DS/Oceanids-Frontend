@@ -28,24 +28,24 @@ export class LegendUtils {
     const steps = 10;
     const scale = chroma.scale(['yellow', 'red', 'black']).domain([grade_min, grade_max]);
     let colorbarHtml = `<p align="center" class="legend-title">${legendTitle[service]}</p>`;
-    colorbarHtml += `<div style="position:relative;display:flex;align-items:center;height:30px;">`;
+    colorbarHtml += `<div class="flood-colorbar">`;
 
     // Colorbar blocks
     for (let i = 0; i <= steps; i++) {
       const value = grade_min + (i * (grade_max - grade_min) / steps);
       const color = scale(value).hex();
-      colorbarHtml += `<div style="width:20px;height:20px;background:${color};"></div>`;
+      colorbarHtml += `<div class="flood-colorbar__segment" style="background:${color};"></div>`;
     }
     colorbarHtml += `</div>`;
 
     // Tick labels with ticks above
-    colorbarHtml += `<div style="position:relative;height:36px;">`;
+    colorbarHtml += `<div class="flood-colorbar__ticks">`;
     grades.forEach((grade, idx) => {
       const leftPercent = ((grade - grade_min) / (grade_max - grade_min)) * 100;
       colorbarHtml += `
-        <div style="position:absolute;left:${leftPercent}%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;">
-          <span style="width:2px;height:6px;background:white;display:block;margin-bottom:2px;"></span>
-          <span style="font-size:15px;color:white;">${grade}</span>
+        <div class="flood-colorbar__tick" style="left:${leftPercent}%;">
+          <span class="flood-colorbar__mark"></span>
+          <span class="flood-colorbar__label">${grade}</span>
         </div>
       `;
     });
