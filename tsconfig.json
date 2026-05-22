@@ -2,7 +2,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "types": ["mapbox-gl"],
     "typeRoots": ["./node_modules/@types"],
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./",
