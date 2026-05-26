@@ -4,13 +4,27 @@ import chroma from "chroma-js";
 import { LegendUtils } from '../shared/utils/Colorbar';
 import { ConstantPool } from '@angular/compiler';
 import { CapitalAndSpacePipe } from '../shared/pipe/capital-and-space.pipe';
+import { CityService } from './city.service';
+import { geojson as flatgeobufGeoJson } from 'flatgeobuf';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GeojsonLayerService {
+  private readonly tidalFlatsRasterLayerName = 'tidal-flats-raster';
+  private readonly tidalFlatsYears = [2020, 2021, 2022, 2023, 2024, 2025];
+  private readonly tidalFlatsYearColours = ['#d7191c', '#fdae61', '#32CD32', '#0074FF', '#BF00FF', '#000000'];
+  private readonly tidalFlatsBounds = L.latLngBounds(
+    [51.174363049097344, 2.9996042237194898],
+    [55.94588687876212, 9.153869368067731]
+  );
+  private tidalFlatsLayerGroup: L.LayerGroup | null = null;
+  private tidalFlatsRasterLayer: L.TileLayer | null = null;
+  private tidalFlatsMap: L.Map | null = null;
+  private readonly tidalFlatsVectorLayers: Partial<Record<number, L.GeoJSON>> = {};
+  private tidalFlatsVectorLoadPromise: Promise<void> | null = null;
 
-  constructor(private capitalAndSpacePipe: CapitalAndSpacePipe) { }
+  constructor(private capitalAndSpacePipe: CapitalAndSpacePipe, private cityService: CityService) { }
 
   addGeoJsonCoastChangeLayer(geoJsonData: any, coastalLine: any, service: string, city: string, drawnItems: L.FeatureGroup, context: any, map: L.Map) {
     const layerGroup = L.layerGroup();
@@ -289,8 +303,183 @@ export class GeojsonLayerService {
     this.addColorBar(map, service);
   }
 
+  addTidalFlatsLayer(
+    service: string,
+    city: string,
+    drawnItems: L.FeatureGroup,
+    context: any,
+    map: L.Map,
+    options: { rasterYear: number; rasterVisible: boolean; nauticalMode: boolean; vectorVisibility: Record<number, boolean> }
+  ) {
+    this.tidalFlatsMap = map;
+    const layerGroup = this.ensureTidalFlatsLayerGroup(service, city, drawnItems);
+    context.handleLayerClick(city, service, null, '');
+    this.ensureTidalFlatsVectorLayersLoaded().then(() => {
+      this.syncTidalFlatsVectorLayers(options.vectorVisibility);
+    });
+    this.ensureTidalFlatsRasterLayer(options.rasterYear, options.nauticalMode, options.rasterVisible);
+    return layerGroup;
+  }
 
+  updateTidalFlatsVectorLayers(vectorVisibility: Record<number, boolean>): void {
+    this.syncTidalFlatsVectorLayers(vectorVisibility);
+  }
 
+  updateTidalFlatsRasterLayer(rasterYear: number, nauticalMode: boolean, rasterVisible: boolean): void {
+    this.ensureTidalFlatsRasterLayer(rasterYear, nauticalMode, rasterVisible);
+  }
+
+  removeTidalFlatsLayer(drawnItems: L.FeatureGroup, map: L.Map): void {
+    if (this.tidalFlatsLayerGroup) {
+      this.tidalFlatsLayerGroup.clearLayers();
+      drawnItems.removeLayer(this.tidalFlatsLayerGroup);
+      this.tidalFlatsLayerGroup = null;
+    }
+
+    this.removeAllTidalFlatsRasterLayers(map);
+
+    this.tidalFlatsRasterLayer = null;
+    this.tidalFlatsMap = null;
+  }
+
+  private ensureTidalFlatsLayerGroup(service: string, city: string, drawnItems: L.FeatureGroup): L.LayerGroup {
+    if (this.tidalFlatsLayerGroup) {
+      //@ts-ignore
+      this.tidalFlatsLayerGroup.options.cityName = city;
+      if (!drawnItems.hasLayer(this.tidalFlatsLayerGroup)) {
+        drawnItems.addLayer(this.tidalFlatsLayerGroup);
+      }
+      return this.tidalFlatsLayerGroup;
+    }
+
+    this.tidalFlatsLayerGroup = L.layerGroup();
+    //@ts-ignore
+    this.tidalFlatsLayerGroup.options.serviceName = service;
+    //@ts-ignore
+    this.tidalFlatsLayerGroup.options.cityName = city;
+    this.tidalFlatsLayerGroup.addTo(drawnItems);
+    return this.tidalFlatsLayerGroup;
+  }
+
+  private ensureTidalFlatsVectorLayersLoaded(): Promise<void> {
+    if (this.tidalFlatsVectorLoadPromise) {
+      return this.tidalFlatsVectorLoadPromise;
+    }
+
+    this.tidalFlatsVectorLoadPromise = Promise.all(
+      this.tidalFlatsYears.map(async (year, index) => {
+        if (this.tidalFlatsVectorLayers[year]) {
+          return;
+        }
+
+        const contourLayer = L.geoJSON(null, {
+          style: {
+            color: this.tidalFlatsYearColours[index],
+            weight: 1.5,
+            opacity: 1,
+          },
+        });
+        const response = await fetch(this.cityService.getTidalFlatsFlatGeobufUrl(year));
+        if (!response.body) {
+          throw new Error(`Unable to read FlatGeobuf stream for year ${year}`);
+        }
+        for await (const feature of flatgeobufGeoJson.deserialize(response.body)) {
+          contourLayer.addData(feature as any);
+        }
+        this.tidalFlatsVectorLayers[year] = contourLayer;
+      })
+    ).then(() => undefined);
+
+    return this.tidalFlatsVectorLoadPromise;
+  }
+
+  private syncTidalFlatsVectorLayers(vectorVisibility: Record<number, boolean>): void {
+    if (!this.tidalFlatsLayerGroup) {
+      return;
+    }
+
+    this.tidalFlatsYears.forEach(year => {
+      const layer = this.tidalFlatsVectorLayers[year];
+      if (!layer) {
+        return;
+      }
+
+      const shouldShow = !!vectorVisibility[year];
+      const isVisible = this.tidalFlatsLayerGroup!.hasLayer(layer);
+
+      if (shouldShow && !isVisible) {
+        this.tidalFlatsLayerGroup!.addLayer(layer);
+        layer.bringToFront();
+      }
+
+      if (!shouldShow && isVisible) {
+        this.tidalFlatsLayerGroup!.removeLayer(layer);
+      }
+    });
+  }
+
+  private ensureTidalFlatsRasterLayer(rasterYear: number, nauticalMode: boolean, rasterVisible: boolean): void {
+    this.cityService.getTidalFlatsXYZ(rasterYear, nauticalMode).subscribe((output: any) => {
+      const currentMap = this.tidalFlatsMap;
+      const hadVisibleRaster = !!(currentMap && this.hasVisibleTidalFlatsRaster(currentMap));
+
+      if (currentMap) {
+        this.removeAllTidalFlatsRasterLayers(currentMap);
+      }
+
+      this.tidalFlatsRasterLayer = L.tileLayer(output['leaflet_url'], {
+        tileSize: 256,
+        minZoom: 1,
+        maxZoom: 20,
+        bounds: output['leaflet_bounds'],
+        noWrap: true,
+        keepBuffer: 1,
+        opacity: 0.85,
+      });
+      //@ts-ignore
+      this.tidalFlatsRasterLayer.options.layerName = this.tidalFlatsRasterLayerName;
+
+      this.syncTidalFlatsRasterLayer(rasterVisible);
+    });
+  }
+
+  private syncTidalFlatsRasterLayer(rasterVisible: boolean): void {
+    const currentMap = this.tidalFlatsMap;
+
+    if (!currentMap || !this.tidalFlatsRasterLayer) {
+      return; 
+    }
+
+    const isVisible = currentMap.hasLayer(this.tidalFlatsRasterLayer);
+
+    if (rasterVisible && !isVisible) {
+      this.removeAllTidalFlatsRasterLayers(currentMap);
+      this.tidalFlatsRasterLayer.addTo(currentMap);
+      this.tidalFlatsRasterLayer.bringToFront();
+    }
+
+    if (!rasterVisible && isVisible) {
+      this.removeAllTidalFlatsRasterLayers(currentMap);
+    }
+  }
+
+  private hasVisibleTidalFlatsRaster(map: L.Map): boolean {
+    let hasVisibleRaster = false;
+    map.eachLayer((layer: any) => {
+      if (layer.options && layer.options.layerName === this.tidalFlatsRasterLayerName) {
+        hasVisibleRaster = true;
+      }
+    });
+    return hasVisibleRaster;
+  }
+
+  private removeAllTidalFlatsRasterLayers(map: L.Map): void {
+    map.eachLayer((layer: any) => {
+      if (layer.options && layer.options.layerName === this.tidalFlatsRasterLayerName) {
+        map.removeLayer(layer);
+      }
+    });
+  }
   private addColorBar(map: L.Map, service?: string) {
     // remove any existing colorbar
     const existingLegend = document.querySelector('.info.legend');

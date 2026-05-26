@@ -20,15 +20,14 @@
       <div class="map-frame">
         <div class="map" id="map"> 
 
-          <section *ngIf="showFloodLayerMenu && selectedFilters.service === 'coastal_flooding'" class="flood-layer-menu">
+          <section *ngIf="showFloodLayerMenu && (selectedFilters.service === 'coastal_flooding' || selectedFilters.service === 'tidal_flats')" class="flood-layer-menu" [style.width]="selectedFilters.service === 'tidal_flats' ? 'min(32vw, 420px)' : null">
             <div class="flood-layer-menu__header">
               <div>
-                <h3>Coastal Flooding Layers</h3>
-                <p>Adjust the filters here and the map layer updates directly.</p>
+                <h3>{{ selectedFilters.service === 'tidal_flats' ? 'Tidal Flats Layers' : 'Coastal Flooding Layers' }}</h3>
               </div>
             </div>
             <p class="flood-layer-menu__description">{{ selectedServiceDescription }}</p>
-            <div class="flood-layer-menu__controls">
+            <div class="flood-layer-menu__controls" *ngIf="selectedFilters.service === 'coastal_flooding'">
               <mat-button-toggle-group [value]="selectedFilters.returnPeriod"
                 (change)="updateFloodLayerFilter('returnPeriod', $event.value)" [hideSingleSelectionIndicator]="true">
                 <div class="flood-layer-menu__label">Return Period</div>
@@ -54,8 +53,61 @@
               </mat-button-toggle-group>
             </div>
             <div class="flood-layer-menu__actions">
-              <button mat-raised-button type="button" class="flood-layer-menu__button flood-layer-menu__button--tiff" (click)="downloadTif()">Download TIFF</button>
-              <button mat-raised-button type="button" class="flood-layer-menu__button flood-layer-menu__button--jpg" (click)="downloadJpg()">Download JPG</button>
+              <button *ngIf="selectedFilters.service === 'coastal_flooding'" mat-raised-button type="button" class="flood-layer-menu__button flood-layer-menu__button--tiff" (click)="downloadTif()">Download TIFF</button>
+              <button *ngIf="selectedFilters.service === 'coastal_flooding'" mat-raised-button type="button" class="flood-layer-menu__button flood-layer-menu__button--jpg" (click)="downloadJpg()">Download JPG</button>
+            </div>
+            <div *ngIf="selectedFilters.service === 'tidal_flats'" class="tidal-flats-panel">
+              <div style="padding: 14px; border-radius: 14px; background: linear-gradient(180deg, rgba(247, 250, 253, 0.98) 0%, rgba(239, 245, 250, 0.98) 100%); border: 1px solid rgba(41, 68, 96, 0.12); box-shadow: 0 10px 24px rgba(23, 50, 77, 0.08);">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px;">
+                  <h4 style="margin: 0; color: #17324d; font-size: 1.7vh; line-height: 1.3;">Low Water Lines</h4>
+                  <span style="font-size: 1.2vh; text-transform: uppercase; letter-spacing: 0.08em; color: #5c7088; font-weight: 700;">Vector</span>
+                </div>
+                <p style="margin: 0 0 12px; color: #5c7088; font-size: 1.5vh; line-height: 1.45;">Show individual yearly low-water lines or toggle them all at once.</p>
+                <div class="tidal-flats-panel__actions" style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                  <button mat-stroked-button type="button" style="font-size: 1.5vh; line-height: 1.3;" (click)="showAllTidalFlatsVectorYears()">All</button>
+                  <button mat-stroked-button type="button" style="font-size: 1.5vh; line-height: 1.3;" (click)="hideAllTidalFlatsVectorYears()">None</button>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
+                  <label style="display: flex; align-items: center; gap: 10px; color: #294460; padding: 8px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.82); border: 1px solid rgba(41, 68, 96, 0.08); font-size: 1.5vh;" *ngFor="let year of tidalFlatsVectorYears">
+                    <input
+                      type="checkbox"
+                      [checked]="tidalFlatsVectorVisibility[year]"
+                      (change)="toggleTidalFlatsVectorYear(year, $any($event.target).checked)"
+                    />
+                    <span style="width: 12px; height: 12px; border-radius: 999px; border: 1px solid rgba(0, 0, 0, 0.18); flex-shrink: 0;" [style.background]="getTidalFlatsVectorColour(year)"></span>
+                    <span style="font-weight: 600; font-size: 1.5vh;">{{ year }}</span>
+                  </label>
+                </div>
+              </div>
+
+              <div style="padding: 14px; border-radius: 14px; background: linear-gradient(180deg, rgba(244, 249, 252, 0.98) 0%, rgba(232, 242, 248, 0.98) 100%); border: 1px solid rgba(41, 68, 96, 0.12); box-shadow: 0 10px 24px rgba(23, 50, 77, 0.08);">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px;">
+                  <h4 style="margin: 0; color: #17324d; font-size: 1.7vh; line-height: 1.3;">Low Tide Images</h4>
+                  <span style="font-size: 1.2vh; text-transform: uppercase; letter-spacing: 0.08em; color: #5c7088; font-weight: 700;">Raster</span>
+                </div>
+                <p style="margin: 0 0 12px; color: #5c7088; font-size: 1.5vh; line-height: 1.45;">Switch the yearly low-tide composite and choose the nautical styling.</p>
+                <div class="tidal-flats-panel__year-switcher" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; padding: 10px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.82); border: 1px solid rgba(41, 68, 96, 0.08);">
+                  <button mat-stroked-button type="button" style="font-size: 1.5vh; line-height: 1.3;" (click)="moveTidalFlatsRasterYear(-1)">&larr;</button>
+                  <span style="min-width: 58px; text-align: center; font-weight: 700; color: #17324d; font-size: 1.5vh;">{{ tidalFlatsRasterYear }}</span>
+                  <button mat-stroked-button type="button" style="font-size: 1.5vh; line-height: 1.3;" (click)="moveTidalFlatsRasterYear(1)">&rarr;</button>
+                </div>
+                <label class="tidal-flats-panel__toggle" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #294460; padding: 10px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.82); border: 1px solid rgba(41, 68, 96, 0.08);">
+                  <span style="font-weight: 600; font-size: 1.5vh;">Nautical mode</span>
+                  <input
+                    type="checkbox"
+                    [checked]="tidalFlatsNauticalMode"
+                    (change)="toggleTidalFlatsNauticalMode($any($event.target).checked)"
+                  />
+                </label>
+                <label class="tidal-flats-panel__toggle" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; color: #294460; padding: 10px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.82); border: 1px solid rgba(41, 68, 96, 0.08);">
+                  <span style="font-weight: 600; font-size: 1.5vh;">Layer on/off</span>
+                  <input
+                    type="checkbox"
+                    [checked]="tidalFlatsRasterVisible"
+                    (change)="toggleTidalFlatsRasterVisibility($any($event.target).checked)"
+                  />
+                </label>
+              </div>
             </div>
           </section>
 

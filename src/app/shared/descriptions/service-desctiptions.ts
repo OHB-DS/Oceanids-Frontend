@@ -52,6 +52,15 @@ export const serviceDescriptions: { [key: string]: string } = {
         '<li>To show the flood map for a different combination of return period and climate scenario, you need to untick and tick again the data service.</li>' +
         '<li>This flood maps show coastal flooding, not pluvial or fluvial flooding</li>' +
         '<li><strong>Data Source:</strong> The data is obtained directly from the <a href="https://platform.coclicoservices.eu/">CoCliCo services</a></li>' +
+        '</ul>',
+
+    'tidal_flats': '<h2>Tidal Flats Mapping Service</h2>' +
+        '<ul>' +
+        '<li>The Tidal Flats service displays the annual position of Low Water lines derived from Sentinel-2 and Landsat imagery coupled with a tidal model.</li>' +
+        '<li>The service includes both raster and vector data. The vector shows the position of the low water lines and the raster the corresponding NDWI composite.</li>' +
+        '<li>The service retrieves the data from the <a href="https://eotideline.lab.dive.edito.eu/">EOTideLines</a> application, deployed on the <a href="https://eotideline.lab.dive.edito.eu/">European Digital Twin of the Ocean (EDITO)</a></li>' +
+        '<li><strong>Project Page:</strong> Read more about EOTideLines on the <a href="https://www.ohb-ds.de/en/reference/eo4ports">OHB-DS reference page</a> and <a href="https://github.com/OHB-DS/Tutorials/blob/main/tutorial_EOTideLines.md">this tutorial</a>.</li>' +
+        '<li><strong>Data Source:</strong> The data is obtained from the publicly hosted <a href="https://eotideline.lab.dive.edito.eu/">EOTideLines</a> product, developed by <a href="https://www.ohb-ds.de/en/geospatial-solutions/earth-observation-solutions/">OHB-Digital Services</a>.</li>' +
         '</ul>'
 };
 export const chartDescriptions: { [key: string]: string } = {
@@ -74,7 +83,10 @@ export const chartDescriptions: { [key: string]: string } = {
     
     'coastal_flooding': 'The coastal flood map shows the areas that are expected to be flooded during a specific return period event, ' +
         'such as a 100-year flood, under the selected climate scenario. This is only for coastal flooding, not pluvial or fluvial flooding ' +
-        '(see https://platform.coclicoservices.eu/).'
+        '(see https://platform.coclicoservices.eu/).',
+
+    'tidal_flats': 'Annual EOTideLines product showing the position of the Low Water lines as vectors and low-tide composites as rasters. ' +
+        'Use the year controls to compare annual outputs and switch the raster between NDWI and nautical mode rendering. Currently only available for the North Sea.'
 };
 export const defaultValueForSerivces: { [key: string]: string } = {
     'coastal_change': 'coastal_change_transects',
@@ -85,6 +97,7 @@ export const defaultValueForSerivces: { [key: string]: string } = {
     'sea_level': 'sea_level_points',
     'atmospheric_data': 'atmospheric_data_points',
     'coastal_flooding': 'none',
+    'tidal_flats': 'none',
 }
 export const defaultValueForTimeseries: { [key: string]: string } = {
     'ground_motion': 'ground_motion_polygon',

@@ -23,6 +23,8 @@ import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
   styleUrls: ['./map.component.scss'],
 })
 export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly tidalFlatsYears = [2020, 2021, 2022, 2023, 2024, 2025];
+  private readonly tidalFlatsYearColours = ['#d7191c', '#fdae61', '#32CD32', '#0074FF', '#BF00FF', '#000000'];
 
   public map: L.Map | undefined;
   public drawnItems: L.FeatureGroup | undefined;
@@ -30,6 +32,14 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   cityForm: FormGroup;
   cityNames: string[] = [];
   cityDataServices: string[] = [];
+  tidalFlatsVectorYears: number[] = [...this.tidalFlatsYears].reverse();
+  tidalFlatsRasterYear = 2025;
+  tidalFlatsRasterVisible = true;
+  tidalFlatsNauticalMode = false;
+  tidalFlatsVectorVisibility: Record<number, boolean> = this.tidalFlatsYears.reduce((state, year) => ({
+    ...state,
+    [year]: year === this.tidalFlatsRasterYear,
+  }), {} as Record<number, boolean>);
   @ViewChild('chartDrawer') chartDrawer!: MatDrawer;
   @ViewChild('citiesPanel') citiesPanel!: MatExpansionPanel;
   @ViewChild('dataServicesPanel') dataServicesPanel!: MatExpansionPanel;
@@ -60,6 +70,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   } 
 
   ngOnDestroy(): void {
+    if (this.drawnItems && this.map) {
+      this.geoJsonService.removeTidalFlatsLayer(this.drawnItems, this.map);
+    }
     this.map?.off();
     this.map?.remove();
     this.map = undefined;
@@ -225,24 +238,32 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   downloadJpg() {
     console.log('downloadJPG', this.selectedFilters);
-    if (this.selectedFilters.service !== 'coastal_flooding') {
+    if (this.selectedFilters.service === 'coastal_flooding') {
+      this.cityService.getFloodmapDownload(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange, 'jpg').subscribe(res => {
+        saveAs(res, `${this.selectedFilters.site}_${this.selectedFilters.service}_${this.selectedFilters.returnPeriod}_${this.selectedFilters.climateScenario}_${this.selectedFilters.timeRange}.jpg`);
+      });
+    } else {
       const city = this.timeseries.name;
       const service = this.timeseries.service;
       const dataId = this.timeseries.transectId;
       this.cityService.getTimeseriesJpg(city, service, dataId).subscribe(res => {
         saveAs(res, `${dataId}.jpg`);
       });
-    } else {
-      this.cityService.getFloodmapDownload(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange, 'jpg').subscribe(res => {
-        saveAs(res, `${this.selectedFilters.site}_${this.selectedFilters.service}_${this.selectedFilters.returnPeriod}_${this.selectedFilters.climateScenario}_${this.selectedFilters.timeRange}.jpg`);
-      });
     }
   }
 
   downloadTif() {
     console.log('downloadTif', this.selectedFilters);
-    this.cityService.getFloodmapDownload(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange, 'tif').subscribe(res => {
-      saveAs(res, `${this.selectedFilters.site}_${this.selectedFilters.service}_${this.selectedFilters.returnPeriod}_${this.selectedFilters.climateScenario}_${this.selectedFilters.timeRange}.tif`);
+    if (this.selectedFilters.service === 'coastal_flooding') {
+      this.cityService.getFloodmapDownload(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange, 'tif').subscribe(res => {
+        saveAs(res, `${this.selectedFilters.site}_${this.selectedFilters.service}_${this.selectedFilters.returnPeriod}_${this.selectedFilters.climateScenario}_${this.selectedFilters.timeRange}.tif`);
+      });
+      return;
+    }
+
+    this.cityService.getTidalFlatsDownload(this.tidalFlatsRasterYear, 'tif', this.tidalFlatsNauticalMode).subscribe(res => {
+      const rasterMode = this.tidalFlatsNauticalMode ? 'nautical' : 'ndwi';
+      saveAs(res, `Wadden_Sea_tidal_flats_${rasterMode}_${this.tidalFlatsRasterYear}.tif`);
     });
   }
 
@@ -348,6 +369,15 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       // if a checkbox is checked
       if (event.checked) {
         this.cityServices[city].add(service);
+        if (service === 'tidal_flats') {
+          this.geoJsonService.addTidalFlatsLayer(service, city, this.drawnItems!, this, this.map!, {
+            rasterYear: this.tidalFlatsRasterYear,
+            rasterVisible: this.tidalFlatsRasterVisible,
+            nauticalMode: this.tidalFlatsNauticalMode,
+            vectorVisibility: this.tidalFlatsVectorVisibility,
+          });
+          return;
+        }
         this.cityService.getGeoJson(service, this.cityForm.get('city')?.value, defaultValueForSerivces[service]).pipe(
           switchMap((geoJsonData: any) => {
             if (service === 'coastal_change') {
@@ -440,9 +470,20 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       // if checkbox is unchecked
       } else {
-        const index = serviceArray.controls.findIndex(x => x.value.name === service);
-        if (index !== -1) {
+        if (service === 'tidal_flats') {
           serviceArray.at(index).patchValue({ selected: false });
+          this.cityServices[city].delete(service);
+          this.selectedServiceDescription = '';
+          if (this.drawnItems && this.map) {
+            this.geoJsonService.removeTidalFlatsLayer(this.drawnItems, this.map);
+          }
+          this.showFloodLayerMenu = false;
+          return;
+        }
+
+        const selectedIndex = serviceArray.controls.findIndex(x => x.value.name === service);
+        if (selectedIndex !== -1) {
+          serviceArray.at(selectedIndex).patchValue({ selected: false });
           this.cityServices[city].delete(service);
           // remove colorbar legends for coastal change, ground motion and flooding
           if (service === 'coastal_change' || service === 'coastal_flooding') {
@@ -565,7 +606,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     };
   }
 
-  private handleLayerClick(city: string, service: string, layer: L.Path, geomId: string) {
+  private handleLayerClick(city: string, service: string, layer: L.Path | null, geomId: string) {
     // layer.unbindTooltip();
     let dataId = '';
     this.titleTimeseries = service;
@@ -656,6 +697,14 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         this.chartDrawer.close();
         this.fetchFloodMapTitiler(this.selectedFilters.site, this.selectedFilters.returnPeriod, this.selectedFilters.climateScenario, this.selectedFilters.timeRange);
         break
+
+      case 'tidal_flats':
+        this.selectedFilters.city = city;
+        this.selectedFilters.site = city;
+        this.selectedFilters.service = service;
+        this.showFloodLayerMenu = true;
+        this.chartDrawer.close();
+        break;
 
       default:
         break;
@@ -752,6 +801,65 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         series: timeseries.data as Series[]
       };
     });
+  }
+
+  getTidalFlatsVectorColour(year: number): string {
+    const yearIndex = this.tidalFlatsYears.indexOf(year);
+    return this.tidalFlatsYearColours[yearIndex] || '#000000';
+  }
+
+  toggleTidalFlatsVectorYear(year: number, checked: boolean): void {
+    this.tidalFlatsVectorVisibility[year] = checked;
+    this.geoJsonService.updateTidalFlatsVectorLayers(this.tidalFlatsVectorVisibility);
+  }
+
+  showAllTidalFlatsVectorYears(): void {
+    this.tidalFlatsYears.forEach(year => {
+      this.tidalFlatsVectorVisibility[year] = true;
+    });
+    this.geoJsonService.updateTidalFlatsVectorLayers(this.tidalFlatsVectorVisibility);
+  }
+
+  hideAllTidalFlatsVectorYears(): void {
+    this.tidalFlatsYears.forEach(year => {
+      this.tidalFlatsVectorVisibility[year] = false;
+    });
+    this.geoJsonService.updateTidalFlatsVectorLayers(this.tidalFlatsVectorVisibility);
+  }
+
+  moveTidalFlatsRasterYear(direction: -1 | 1): void {
+    const yearIndex = this.tidalFlatsYears.indexOf(this.tidalFlatsRasterYear);
+    const nextIndex = (yearIndex + direction + this.tidalFlatsYears.length) % this.tidalFlatsYears.length;
+    this.tidalFlatsRasterYear = this.tidalFlatsYears[nextIndex];
+    this.geoJsonService.updateTidalFlatsRasterLayer(this.tidalFlatsRasterYear, this.tidalFlatsNauticalMode, this.tidalFlatsRasterVisible);
+  }
+
+  toggleTidalFlatsNauticalMode(checked: boolean): void {
+    this.tidalFlatsNauticalMode = checked;
+    this.geoJsonService.updateTidalFlatsRasterLayer(this.tidalFlatsRasterYear, this.tidalFlatsNauticalMode, this.tidalFlatsRasterVisible);
+  }
+
+  toggleTidalFlatsRasterVisibility(checked: boolean): void {
+    this.tidalFlatsRasterVisible = checked;
+    this.geoJsonService.updateTidalFlatsRasterLayer(this.tidalFlatsRasterYear, this.tidalFlatsNauticalMode, this.tidalFlatsRasterVisible);
+  }
+
+  private activateTidalFlatsService(city: string): void {
+    this.titleTimeseries = 'tidal_flats';
+    this.selectedServiceDescription = chartDescriptions['tidal_flats'] || 'No description available.';
+    this.selectedFilters.city = city;
+    this.selectedFilters.site = city;
+    this.selectedFilters.service = 'tidal_flats';
+    this.showFloodLayerMenu = true;
+    this.chartDrawer.close();
+    if (this.drawnItems && this.map) {
+      this.geoJsonService.addTidalFlatsLayer('tidal_flats', city, this.drawnItems, this, this.map, {
+        rasterYear: this.tidalFlatsRasterYear,
+        rasterVisible: this.tidalFlatsRasterVisible,
+        nauticalMode: this.tidalFlatsNauticalMode,
+        vectorVisibility: this.tidalFlatsVectorVisibility,
+      });
+    }
   }
 }
 

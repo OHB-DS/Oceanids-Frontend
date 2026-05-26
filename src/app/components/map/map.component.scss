@@ -40,6 +40,7 @@
   display: flex;
   flex-direction: column;
 }
+
 .panel-container {
   position: absolute;
   top: 1%;
@@ -151,6 +152,17 @@
   background: #ff4081;
   color: white;
 }
+
+.tidal-flats-panel {
+  margin-top: clamp(12px, 1.8vw, 14px);
+  padding-top: clamp(10px, 1.5vw, 12px);
+  border-top: 1px solid rgba(41, 68, 96, 0.16);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 14px);
+  align-items: start;
+}
+
 mat-tab-group {
   background-color: #faf9f9;
   opacity: 70%;
@@ -243,6 +255,10 @@ input.number::-webkit-inner-spin-button {
   .flood-layer-menu__label,
   .flood-layer-menu__actions .mat-mdc-raised-button {
     font-size: 1.4vh;
+  }
+
+  .tidal-flats-panel {
+    grid-template-columns: 1fr;
   }
 
   mat-expansion-panel-header {
