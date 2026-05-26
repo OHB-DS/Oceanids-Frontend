@@ -1,0 +1,719 @@
+<html>
+
+<head>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8WVS8JCFRV"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-8WVS8JCFRV');
+  </script>
+
+  <!-- App metadata -->
+  <title>EOTideLines</title>
+  <meta name="author" content="OHB DIGITAL">
+  <meta name="description" content="Satellite-based monitoring of the bathymetry exposed at low tide, useful for navigation and maritime operations.">
+  <link rel="icon" href="https://minio.dive.edito.eu/oidc-kvos/eotideline/assets/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+
+  <!-- App packages -->
+  
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+  <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@latest/assets/css/leaflet.css">
+  <script src="https://unpkg.com/leaflet-geosearch@latest/dist/bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet-providers@1.3.0/leaflet-providers.js"></script>
+  <script src="https://unpkg.com/leaflet.glify@3.3.0/dist/glify-browser.js"></script>
+  <script src="https://unpkg.com/leaflet-spin@1.1.0/leaflet.spin.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/js/leaflet-sidebar.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.css" rel="stylesheet">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <!-- Other libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"
+    integrity="sha512-zInFF17qBFVvvvFpIfeBzo7Tj7+rQxLeTJDmbxjBz5/zIr89YVbTNelNhdTT+/DCrxoVzBeUPVFJsczKbB7sew=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://unpkg.com/flatgeobuf@4.3.3/dist/flatgeobuf-geojson.min.js"></script>
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="./style.css">
+
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-left">
+      <a class="mainlogo" href="https://www.ohb-ds.de/en/geospatial-solutions/earth-observation-solutions" target="_blank" rel="noopener noreferrer">
+        <img src="https://minio.dive.edito.eu/oidc-kvos/eotideline/assets/OHB_DS_logo_white.png" alt="OHB Logo" />
+      </a>
+    </div>
+    <div class="header-left ">
+      <!-- <a class="mainlogo" href="https://www.esa.int/" target="_blank" rel="noopener noreferrer">
+        <img src="https://minio.dive.edito.eu/oidc-kvos/eotideline/assets/ESA_logo_2020_White.png" alt="ESA Logo" />
+      </a> -->
+    </div>
+    <div class="header-right ">
+      <a class="mainlogo" href="https://www.ohb-ds.de/en/referenz/eo4ports" target="_blank" rel="noopener noreferrer">
+        <img src="https://minio.dive.edito.eu/oidc-kvos/eotideline/assets/favicon_white.ico" alt="EOTideLines Logo" />
+      </a>
+    </div>
+    <div style="text-align: center; color: white; font-weight: bold; font-size: 3vh; font-family: Arial, sans-serif; position: fixed; width: 100%; display: flex; justify-content: center; align-items: center;">
+      <span>EOTideLines: Tidal Bathymetry from Space</span>
+    </div>
+  </header>
+  <div class="line"></div>
+
+  <!-- Map -->
+  <div id="map"></div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 OHB Digital Services</p>
+    <nav>
+      <a href="https://www.ohb-ds.de/en/geospatial-solutions/earth-observation-solutions" target="_blank" rel="noopener noreferrer">About Us</a>
+    </nav>
+    <span class="version-number">v1.0 (2025)</span>
+  </footer>
+
+  <!-- Instructions Popup -->
+  <div id="instructionsModal" class="modal">
+    <div class="modal-content">
+      <h3>🚀 Welcome to the EOTideLines portal!</h3>
+      <p style="text-align: left;">➡️ Chek out our <a href="https://github.com/OHB-DS/Tutorials/blob/main/tutorial_EOTideLines.md" target="_blank">tutorial</a>
+        and <a href="https://www.youtube.com/watch?v=h_SVAUlRhDY&ab_channel=OHBDigitalServices" target="_blank">video demo</a>
+      </p>
+      <p style="text-align: left;">
+        🌊 Display the yearly Low Water Lines (vector)
+      <p style="text-align: left;">
+        🌍 Display the yearly Low Tide Images (raster)
+      </p>
+      <!-- <p style="font-size: 14px">
+        Hover on <img src="https://minio.dive.edito.eu/oidc-kvos/eotideline/assets/layer-group-solid.svg" style="width: 20px;  object-fit: contain;"></img>
+        to display annual Low Water Lines (from 2020 to 2025)
+      </p> -->
+      <!-- <p style="font-size: 14px">Click on the grid cells to see changes over time</p> -->
+      <p style="text-align: left;">⏰ New updated data every 6 months!</p>
+      <p style="text-align: left;">Click on the &nbsp;<i class="fa fa-info"></i>&nbsp; tab for more info on the methods</p>
+      <p style="text-align: left;">Click on the &nbsp;<i class="fa fa-download"></i>&nbsp; tab to download the data</p>
+      <button id="closeModal">Got it!</button>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div id="sidebar" class="leaflet-sidebar collapsed">
+
+    <!-- Navigation tabs -->
+    <div class="leaflet-sidebar-tabs">
+      <ul role="tablist"> <!-- top aligned tabs -->
+        <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+        <li><a href="#info" role="tab"><i class="fa fa-info"></i></a></li>
+        <li><a href="#download" role="tab"><i class="fa fa-download"></i></a></li>
+      </ul>
+    </div>
+
+    <!-- Tab panes -->
+    <div class="leaflet-sidebar-content" style="font-size: 11pt;">
+
+      <!-- Home tab -->
+      <div class="leaflet-sidebar-pane" id="home">
+        <div id="attribution">
+          <!-- <strong style="font-size: 18;">EOTideLines: Tidal Bathymetry from Space</strong><br><br> -->
+          <center>
+            <a href="https://www.ohb-ds.de/en/geospatial-solutions/earth-observation-solutions" target="_blank">
+              <img src="https://minio.dive.edito.eu/oidc-kvos/eotideline/assets/EOTideLines_test_dark.png" alt="Image" width="100"/>
+            </a>
+          </center><br>
+          EOTideLines displays the latest position of the Low Water line, derived from Landsat and
+          Sentinel-2 optical images coupled with a tidal model.<br><br>
+            <!-- <a href="https://minio.dive.edito.eu/oidc-kvos/eotideline/assets/EOTideLine_example_image.jpg" target="_blank">
+              <img src="https://minio.dive.edito.eu/oidc-kvos/eotideline/assets/EOTideLine_example_image.jpg" alt="Example line"
+              style="width: 100%; max-height: 300px; object-fit: contain;" />
+            </a> -->
+            <a href="https://minio.dive.edito.eu/oidc-kvos/eotideline/assets/Ameland_animation.gif" target="_blank">
+              <img src="https://minio.dive.edito.eu/oidc-kvos/eotideline/assets/Ameland_animation.gif" alt="Example line"
+              style="width: 100%; max-height: 300px; object-fit: contain;" />
+            </a>
+          <br><br>
+          This contour delineates the low-tide bathymetry and can be used to:
+          <ul>
+            <li>Provide near-real time information of the state of the intertidal bathymetry.</li>
+            <li>Highlight the presence of transient features like sand banks, shoals and channels.</li>
+            <li>Identify potential obstacles that can impair navigability in harbour entrances and delay operations.</li>
+            <li>Support better planning and execution of dredging works by understanding past migration rates and direction of sand transport.</li>
+            <li>Provide historical insights to better understand geomorphological changes in tidal bathymetry.</li>
+            <li>A <a href="https://github.com/OHB-DS/Tutorials/blob/main/tutorial_EOTideLines.md" target="_blank">tutorial</a> on EOTIdeLines is available.</li>
+            <li>The dataset is publicly available at the <a href="https://browser.apex.esa.int/external/eoresults.esa.int/stac/collections/EOTideLines_EO4PORTS" target="_blank">ESA PRR STAC Repository.</a></li>
+          </ul>
+
+          This product was funded by the European Space Agency (ESA) under the project "EO for the Port of the Future (EO4PORTS)" (4000143660/24/I-DT- EO Best Practice 2023 Industry Sector C).
+          <center>
+            <a href="https://earsc-portal.eu/display/EO4PO/Earth+Observation+for+Ports" target="_blank">
+              <img src="https://minio.dive.edito.eu/oidc-kvos/eotideline/assets/E4PORTS_logo.png" alt="Logo EO4PORTS" style="width: 40%; max-height: 300px; object-fit: contain;" />
+            </a>
+          </center>
+        </div>
+      </div>
+
+      <!-- Info tab -->
+      <div class="leaflet-sidebar-pane" id="info">
+        <div id="attribution">
+          <strong>Methods: Low Water Line mapping</strong><br>
+          The step-by-step methodology developed to extract the Low Water line from publicly available satellite imagery is described below:
+          <ol>
+            <li><strong>Retrieve imagery of AOI</strong></li> 
+            All the available Landsat 5, 7, 8, 9 and Sentinel-2 images are retrieved from their respective collections.
+            <br><br>
+            <li><strong>Assign a tide level to each image</strong></li> 
+            The global tide model developed by CNES 
+            <a href="https://www.aviso.altimetry.fr/en/data/products/auxiliary-products/global-tide-fes/release-fes22.html" target="_blank">
+              FES2022 (Finite Element Solution)
+            </a>
+            is used to assign a tide level to every satellite image.
+            <a href="https://minio.dive.edito.eu/oidc-kvos/eotideline/assets/Wadden_Sea_32UME_050_tide_timeseries_v5.jpg" target="_blank">
+              <img src="https://minio.dive.edito.eu/oidc-kvos/eotideline/assets/Wadden_Sea_32UME_050_tide_timeseries_v5.jpg" alt="tides"
+              style="width: 100%; height: auto; object-fit: contain;" />
+            </a>
+            <br><br>
+            <li><strong>Compute a low-tide NDWI composite</strong></li>
+            The satellite images captured at low tide (bottom 30% of the springs tidal range) are used to compute a composite NDWI (Normalized Difference Water Index) image. 
+            The 70th percentile is taken when calculating the composite to give more weight to dry pixels. 
+            <br><br>
+            <li><strong>Extract the sand/water contours</strong></li>
+            Use the NDWI contrast between water and wet sand to extract the low-tide line from the composite as a vector line.
+          </ol>
+          <a href="https://minio.dive.edito.eu/oidc-kvos/eotideline/assets/2024_Wadden_Sea_32UME_048_lowtideline_v5.jpg" target="_blank">
+            <img src="https://minio.dive.edito.eu/oidc-kvos/eotideline/assets/2024_Wadden_Sea_32UME_048_lowtideline_v5.jpg" alt="tides"
+            style="width: 100%; height: auto; object-fit: contain;" />
+          </a>
+          <br><br>
+          <strong>This process is repeated for each 10x10km grid cell shown on the map.</strong>
+        </div>
+      </div>
+
+      <!-- Downloads tab -->
+      <div class="leaflet-sidebar-pane" id="download">
+        <div id="attribution">
+          <strong>Downloads</strong><br>
+
+          <p>Download the Low Water Lines for the North Sea/Wadden Sea region as GeoJSON at the links below:</p>
+          <ul>
+            <li><a href="https://minio.dive.edito.eu/oidc-kvos/eotideline/3_geojson/2020_Wadden_Sea_lowtideline_v5.geojson" target="_blank"><i class="fa fa-download"></i> 2020 Low Water Line</a></li>
+            <li><a href="https://minio.dive.edito.eu/oidc-kvos/eotideline/3_geojson/2021_Wadden_Sea_lowtideline_v5.geojson" target="_blank"><i class="fa fa-download"></i> 2021 Low Water Line</a></li>
+            <li><a href="https://minio.dive.edito.eu/oidc-kvos/eotideline/3_geojson/2022_Wadden_Sea_lowtideline_v5.geojson" target="_blank"><i class="fa fa-download"></i> 2022 Low Water Line</a></li>
+            <li><a href="https://minio.dive.edito.eu/oidc-kvos/eotideline/3_geojson/2023_Wadden_Sea_lowtideline_v5.geojson" target="_blank"><i class="fa fa-download"></i> 2023 Low Water Line</a></li>
+            <li><a href="https://minio.dive.edito.eu/oidc-kvos/eotideline/3_geojson/2024_Wadden_Sea_lowtideline_v5.geojson" target="_blank"><i class="fa fa-download"></i> 2024 Low Water Line</a></li>
+            <li><a href="https://minio.dive.edito.eu/oidc-kvos/eotideline/3_geojson/2025_Wadden_Sea_lowtideline_v5.geojson" target="_blank"><i class="fa fa-download"></i> 2025 Low Water Line</a></li>
+          </ul>
+          <p>For more information and extension to other coastal areas and time periods, contact <strong>kilian.vos@ohb-ds.de</strong></p>
+          
+          <p>The dataset is also publicly available at the <a href="https://browser.apex.esa.int/external/eoresults.esa.int/stac/collections/EOTideLines_EO4PORTS" target="_blank">ESA PRR STAC Repository.</a></p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Webapp functionalities -->
+    <script>
+
+      // Display instructions popup on load
+      window.onload = function () {
+        var modal = document.getElementById("instructionsModal");
+        var closeModalButton = document.getElementById("closeModal");
+
+        modal.style.display = "block";
+
+        closeModalButton.onclick = function () {
+          modal.style.display = "none";
+        };
+
+        window.onclick = function (event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        };
+      };
+
+      // Define the current year, years, and colours as global variables
+      const LAST_UPDATED = "Nov 2025";
+      const CURRENT_YEAR = 2025;
+      const YEARS = [2020, 2021, 2022, 2023, 2024, CURRENT_YEAR];
+      const COLOURS = ["#d7191c", "#fdae61", "#32CD32", "#0074FF", "#BF00FF", "black"];
+      const prefix = `${CURRENT_YEAR}_Wadden_Sea`
+      const suffix = "lowtideline_v5"
+      const suffix_tides = "tides_v5"
+      const MAIN_URL = "https://minio.dive.edito.eu/oidc-kvos/eotideline/";
+
+      // Function to handle blue button clicks (forwards to change viewer)
+      function onBlueButtonClick(grid_id) {
+        console.log(grid_id);
+        const viewerUrl = `/image_viewer.html?id=${grid_id}`;
+        window.open(viewerUrl, '_blank'); 
+      }
+
+      // Function to handle green button clicks (shows tide levels)
+      function onGreenButtonClick(grid_id) {
+        console.log(grid_id);
+        const imageUrl = `${MAIN_URL}1_images/${CURRENT_YEAR}/tides/${prefix}_${grid_id}_${suffix_tides}.jpg`;
+        // Show the tide timeseries image in the popup
+        const popup = document.querySelector('.leaflet-popup-content');
+        if (popup) {
+          // Remove any previous plot/image
+          let existing = popup.querySelector('.tide-timeseries-img');
+          if (existing) existing.remove();
+
+            // Create and append the clickable image
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = 'Tide Timeseries';
+            img.className = 'tide-timeseries-img';
+            img.style.width = '100%';
+            img.style.maxWidth = '600px';
+            img.style.marginTop = '10px';
+            img.style.border = '1px solid #ccc';
+
+            link.appendChild(img);
+            popup.appendChild(link);
+        }
+      }
+
+      // Display map
+      var map = L.map('map', {
+        center: [53.599472, 7.877775],
+        zoom: 7,
+        //worldCopyJump: true
+      })
+
+      // Display sidebar
+      var sidebar = L.control.sidebar({
+        autopan: false,       // whether to maintain the centered map point when opening the sidebar
+        closeButton: true,    // whether t add a close button to the panes
+        container: 'sidebar', // the DOM container or #ID of a predefined sidebar container that should be used
+        position: 'right',     // left or right
+      }).addTo(map)//.open("home")
+
+      // Select basemaps
+      var baseMaps = {
+        "OpenStreetMaps": L.tileLayer.provider("OpenStreetMap.Mapnik"),
+        "Google Hybrid": L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+          maxZoom: 22,
+          subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        }),
+        // "CartoDB Positron": L.tileLayer.provider('CartoDB.Positron'),
+        // "CartoDB Dark Matter": L.tileLayer.provider("CartoDB.DarkMatter"),
+        "ESRI WorldImagery": L.tileLayer.provider("Esri.WorldImagery").addTo(map),
+      }
+
+      // Create a layer control and place it in the upper-left corner
+      const layerControl = L.control.layers(
+        baseMaps, // Base layers
+        {}, // Overlays
+        { position: 'topleft' } // Set position to the top-left
+      ).addTo(map);
+
+      ///////////////////////////////////////////////////////////////////////////
+      // GRID CELLS
+      ///////////////////////////////////////////////////////////////////////////
+      const full_path_tiles = `${MAIN_URL}3_geojson/Wadden_Sea_grid_sel.geojson`;
+      $.getJSON(full_path_tiles, function (geojson) {
+        for (var f of geojson.features) {
+          for (var c of f.geometry.coordinates) {
+            if (c[0] < 0) c[0] += 360
+          }
+        }
+        // Add the GeoJSON to the map with black styling
+        gridLayer = L.geoJSON(geojson, {
+          style: function () {
+            return {
+              color: "black",  // Set line color to black
+              weight: 1,     // Set line width
+              fill: true, // Enable fill so the polygon is clickable
+              fillOpacity: 0.01, // Almost transparent fill
+            };
+          },
+          onEachFeature: function (feature, layer) {
+            const selectedAttributes = ['grid_id', 'date_start', 'date_end',
+              'images_in_composite', 'tidal_range_springs', 'obs_tide_level'];
+            // Extract attributes for the popup
+            const properties = feature.properties || {};
+            // Format the 'date' field to Month and Year
+            if (properties.date_start) {
+              const date = new Date(properties.date_start);
+              properties.date_start = date.toLocaleString('default', { month: 'long', year: 'numeric' }); // e.g., "January 2023"
+            }
+            if (properties.date_end) {
+              const date = new Date(properties.date_end);
+              properties.date_end = date.toLocaleString('default', { month: 'long', year: 'numeric' }); // e.g., "January 2023"
+            }
+            // Format the tide level with the units
+            if (properties.tidal_range_springs) {
+              properties.tidal_range_springs = properties.tidal_range_springs.toFixed(2) + " m" 
+            }
+            if (properties.obs_tide_level) {
+              properties.obs_tide_level = properties.obs_tide_level.toFixed(2) + " m" 
+            }
+            // Create table with attributes
+            const attributesTable = selectedAttributes.map((key) => {
+              const value = properties[key] || "N/A";
+              return `<tr><td style="padding: 4px; font-size: 10px;">${key}</td><td style="padding: 4px; font-size: 10px;">${value}</td></tr>`;
+            }).join("");
+
+            // Extract the image URL for the current year
+            const imageUrl = `${MAIN_URL}1_images/${CURRENT_YEAR}/simple/${prefix}_${properties.grid_id}_${suffix}.jpg`;
+
+            // Create popup content
+            const popupContent = `
+              <div style="display: flex; flex-direction: row; gap: 10px; align-items: flex-start; max-width: 900px;">
+                <div style="flex: 1; min-width: 300px;">
+                  <img src="${imageUrl}" alt="Feature Image" style="width: 100%; max-height: 600px; object-fit: contain; border: 1px solid #ccc;" />
+                </div>
+                <div style="flex: 1; min-width: 200px; max-width: 300px;">
+                  <table style="width: 100%; border-collapse: collapse; border: 1px solid #ccc; font-size: 12px;">
+                    <thead>
+                      <tr style="background-color: #f8f8f8; font-size: 12px;">
+                        <th style="text-align: left; padding: 6px; border-bottom: 1px solid #ddd;">Attribute</th>
+                        <th style="text-align: left; padding: 6px; border-bottom: 1px solid #ddd;">Value</th>
+                      </tr>
+                    </thead>
+                    <tbody style="font-size: 12px;">
+                      ${attributesTable}
+                    </tbody>
+                  </table>
+                  <button class="blue-button" onclick="onBlueButtonClick('${properties.grid_id}')">Explore changes</button>
+                  <button class="green-button" onclick="onGreenButtonClick('${properties.grid_id}')">Tide timeseries</button>
+                </div>
+              </div>
+            `;
+
+            // Bind the popup to the layer
+            layer.bindPopup(popupContent, {
+              maxWidth: 900, // Set maximum width
+              minWidth: 400, // Set minimum width
+            });
+
+            // Highlight the line on mouseover
+            layer.on('mouseover', function () {
+              layer.setStyle({
+                color: "yellow",   // Highlight color
+                weight: 3       // Highlight width
+              });
+            });
+
+            // Reset the line style on mouseout
+            layer.on('mouseout', function () {
+              layer.setStyle({
+                color: "black", // Default color
+                weight: 1       // Default width
+              });
+            });
+
+            // Open popup on click
+            layer.on('click', function () {
+              layer.openPopup();
+            });
+          }
+        });
+        gridLayer.addTo(map);
+        layerControl.addOverlay(gridLayer, "Metadata grid");
+      });
+
+      ///////////////////////////////////////////////////////////////////////////
+      // LOW WATER LINES (vector)
+      ///////////////////////////////////////////////////////////////////////////
+      const fp = `${MAIN_URL}4_flatgeobuf`;
+      async function addLayersInOrder() {
+        for (let i = YEARS.length - 1; i >= 0; i--) {
+          console.log(`Year: ${YEARS[i]}`);
+          const fn = `${YEARS[i]}_Wadden_Sea_${suffix}.fgb`;
+          const full_path_fgb = `${fp}/${fn}`;
+          console.log(`Loading from: ${full_path_fgb}`);
+          const contourLayer = L.geoJSON(null, {
+            style: function () {
+              return {
+                color: COLOURS[i],
+                weight: 1.5
+              };
+            }
+          });
+          async function loadFGB(url) {
+            const response = await fetch(url);
+            for await (const feature of flatgeobuf.deserialize(response.body)) {
+              contourLayer.addData(feature);
+            }
+          }
+          await loadFGB(full_path_fgb);
+          // store layer in list and 
+          layersByYear[YEARS[i]] = contourLayer;
+          applyVisibility(YEARS[i]);
+        }
+      }
+      addLayersInOrder();
+
+      // Left-side Low Water Lines control to add/remove yearly layers
+      const layersByYear = {}; // year -> L.GeoJSON
+      const layersByYearVisible = Object.fromEntries(YEARS.map(y => [y, y === CURRENT_YEAR]));
+
+      function applyVisibility(year) {
+        const layer = layersByYear[year];
+        if (!layer) return; // not loaded yet
+        const shouldShow = !!layersByYearVisible[year];
+        const isOnMap = map.hasLayer(layer);
+        if (shouldShow && !isOnMap) layer.addTo(map);
+        if (!shouldShow && isOnMap) map.removeLayer(layer);
+      }
+
+      function buildLayerDivControl() {
+        const ctrl = L.control({ position: "topleft" });
+        ctrl.onAdd = function () {
+          const div = L.DomUtil.create("div", "lowwaterlines-div");
+
+          div.innerHTML = `
+            <div class="lwl__header">
+              <strong>Low Water Lines</strong>
+              <span class="lwl__meta">(vector)</span>
+            </div>
+
+            <div class="lwl__btnrow">
+              <button type="button" id="lwlSelectAll" class="lwl__btn">All</button>
+              <button type="button" id="lwlSelectNone" class="lwl__btn">None</button>
+            </div>
+
+            <div id="lwlCheckboxList" class="lwl__list"></div>
+          `;
+
+          // stop map drag/zoom when interacting
+          L.DomEvent.disableClickPropagation(div);
+          L.DomEvent.disableScrollPropagation(div);
+          return div;
+        };
+        return ctrl;
+      }
+
+      function createCheckBoxes() {
+        const list = document.getElementById("lwlCheckboxList");
+        if (!list) return;
+
+        list.innerHTML = YEARS.slice().reverse().map((year) => {
+          const idx = YEARS.indexOf(year);
+          const color = COLOURS[idx] || "black";
+          const checked = layersByYearVisible[year] ? "checked" : "";
+          return `
+            <label class="lwl__item">
+              <input type="checkbox" class="lwlYearCb" data-year="${year}" ${checked} />
+              <span class="lwl__swatch" style="background:${color};"></span>
+              <span>${year}</span>
+            </label>
+          `;
+        }).join("");
+
+        // wire checkbox events
+        list.querySelectorAll(".lwlYearCb").forEach(cb => {
+          cb.addEventListener("change", (e) => {
+            const year = Number(e.target.getAttribute("data-year"));
+            layersByYearVisible[year] = !!e.target.checked;
+            applyVisibility(year);
+          });
+        });
+
+        // wire all/none
+        const allBtn = document.getElementById("lwlSelectAll");
+        const noneBtn = document.getElementById("lwlSelectNone");
+
+        if (allBtn) {
+          allBtn.onclick = () => {
+            YEARS.forEach(y => layersByYearVisible[y] = true);
+            list.querySelectorAll(".lwlYearCb").forEach(cb => cb.checked = true);
+            YEARS.forEach(applyVisibility);
+          };
+        }
+        if (noneBtn) {
+          noneBtn.onclick = () => {
+            YEARS.forEach(y => layersByYearVisible[y] = false);
+            list.querySelectorAll(".lwlYearCb").forEach(cb => cb.checked = false);
+            YEARS.forEach(applyVisibility);
+          };
+        }
+      }
+
+      // Create and add the div control
+      const lowWaterLinesControl = buildLayerDivControl().addTo(map);
+      // Render checkboxes after control is attached (so DOM IDs exist)
+      createCheckBoxes();
+    
+
+      ///////////////////////////////////////////////////////////////////////////
+      // LOW TIDE IMAGE (raster)
+      ///////////////////////////////////////////////////////////////////////////
+
+      // URL builder for TiTiler COGs by year
+      function titilerUrlForYear(year, nautical) {
+        const tif = nautical
+          ? `EOTideLines_single_cog_nautical_${year}.tif`
+          : `EOTideLines_single_cog_ndwi_${year}.tif`;
+
+        const base = "http://gateway.oceanids-project.eu/gateway/titiler/cog/tiles/WebMercatorQuad/{z}/{x}/{y}@1x";
+        const cogUrl = encodeURIComponent(`${MAIN_URL}5_cogs/${tif}`);
+
+        if (nautical) {
+          return `${base}?url=${cogUrl}&nodata=0&pixel_selection=first&colormap=%7B%221%22%3A+%22%2333aaee%22%2C+%222%22%3A+%22%2373c673%22%2C+%223%22%3A+%22%23ffee77%22%7D`;
+        }
+        return `${base}?url=${cogUrl}&nodata=65535&pixel_selection=first&colormap_name=coolwarm&rescale=11468.625%2C40959.375`;
+      }
+
+      // define selected raster year and nautical mode
+      let rasterYearIdx = Math.max(0, YEARS.indexOf(CURRENT_YEAR));
+      let rasterNautical = false;
+      let titilerVisible = true;
+
+      function updateLowTideImageLabel() {
+        const el = document.getElementById("ltiYearLabel");
+        if (el) el.textContent = String(YEARS[rasterYearIdx]);
+      }
+
+      function updateTitilerLayer() {
+        const year = YEARS[rasterYearIdx];
+        titilerLayer.setUrl(titilerUrlForYear(year, rasterNautical));
+        titilerLayer.bringToFront();
+        updateLowTideImageLabel();
+      }
+
+      // initialize TiTiler from the current raster state
+      const titiler_bounds = [[51.174363049097344,2.9996042237194898],[55.94588687876212,9.153869368067731]];
+      const titilerLayer = L.tileLayer(titilerUrlForYear(YEARS[rasterYearIdx], rasterNautical), {
+        tileSize: 256,
+        minZoom: 1,
+        maxZoom: 20,
+        bounds: titiler_bounds,
+      }).addTo(map);
+      titilerLayer.bringToFront();
+
+      // control div for raster (arrow buttons)
+      function buildLowTideImageDivControl() {
+        const ctrl = L.control({ position: "topleft" });
+        ctrl.onAdd = function () {
+          const div = L.DomUtil.create("div", "lowtideimage-div");
+
+          div.innerHTML = `
+        <div class="lti__header">
+          <strong>Low Tide Images</strong>
+          <span class="lti__meta">(raster)</span>
+        </div>
+
+        <div class="lti__row">
+          <button type="button" class="lti__btn" id="ltiPrevBtn" aria-label="Previous year">&larr;</button>
+          <span class="lti__year"><span id="ltiYearLabel">${CURRENT_YEAR}</span></span>
+          <button type="button" class="lti__btn" id="ltiNextBtn" aria-label="Next year">&rarr;</button>
+        </div>
+
+        <label class="lti__toggle">
+          <input type="checkbox" id="ltiNauticalToggle" />
+          <span>Nautical mode</span>
+        </label>
+
+        <label class="lti__toggle">
+          <input type="checkbox" id="ltiVisibilityToggle" checked />
+          <span>Layer on/off</span>
+        </label>
+          `;
+
+          L.DomEvent.disableClickPropagation(div);
+          L.DomEvent.disableScrollPropagation(div);
+
+          const prev = div.querySelector("#ltiPrevBtn");
+          const next = div.querySelector("#ltiNextBtn");
+          const nautical = div.querySelector("#ltiNauticalToggle");
+          const visibility = div.querySelector("#ltiVisibilityToggle");
+
+          if (prev) {
+        prev.addEventListener("click", () => {
+          rasterYearIdx = (rasterYearIdx - 1 + YEARS.length) % YEARS.length;
+          updateTitilerLayer();
+        });
+          }
+          if (next) {
+        next.addEventListener("click", () => {
+          rasterYearIdx = (rasterYearIdx + 1) % YEARS.length;
+          updateTitilerLayer();
+        });
+          }
+          if (nautical) {
+        nautical.checked = rasterNautical;
+        nautical.addEventListener("change", (e) => {
+          rasterNautical = !!e.target.checked;
+          updateTitilerLayer();
+        });
+          }
+          if (visibility) {
+        visibility.checked = titilerVisible;
+        visibility.addEventListener("change", (e) => {
+          titilerVisible = !!e.target.checked;
+          if (titilerVisible) {
+            map.addLayer(titilerLayer);
+          } else {
+            map.removeLayer(titilerLayer);
+          }
+        });
+          }
+
+          return div;
+        };
+        return ctrl;
+      }
+      buildLowTideImageDivControl().addTo(map);
+      updateLowTideImageLabel();
+
+
+      // Geosearch bar
+      var geoSearch = new GeoSearch.GeoSearchControl({
+        provider: new GeoSearch.OpenStreetMapProvider(),
+        style: 'button',
+        autoComplete: true,
+        autoCompleteDelay: 250,
+        autoClose: true,
+        position: "topleft"
+      }).addTo(map);
+
+
+      // Last-updated textbox
+      var legend_lastupdated = L.control({position: 'topright'});
+      legend_lastupdated.onAdd = function (map) {
+        var div = L.DomUtil.create('div');
+        div.style.position = 'relative';
+        div.style.width = 'auto';
+        div.style.height = 'auto';
+        div.style.zIndex = '1000';
+        div.style.textAlign = 'right';
+        div.style.borderRadius = '4px';
+        div.style.backgroundColor = 'rgba(255,255,255,0.95)';
+        div.style.color = '#333';
+        div.style.fontSize = '12px';
+        div.style.fontFamily = 'Arial, sans-serif';
+        div.style.padding = '4px 10px';
+        div.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08)';
+        div.innerHTML = `<span style="font-weight: bold;">Last updated:</span> ${LAST_UPDATED}`;
+        return div;
+      };
+      legend_lastupdated.addTo(map);
+
+    </script>
+</body>
+
+</html>
