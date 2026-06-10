@@ -5,6 +5,7 @@ export const environment = {
     mapbox: {
         accessToken: 'pk.eyJ1IjoiZmF0aW1hMjQiLCJhIjoiY2x5Z3dsaXo5MGJoYTJtcXoxN3V1NWdneCJ9.8mzxqNLSW_z6PnmwrTok5g'
     },
-    apiUrl: 'http://127.0.0.1:8005/gateway/dataapi',
+    // apiUrl: 'http://127.0.0.1:8005/gateway/dataapi',
+    apiUrl: 'https://gateway.oceanids-project.eu/gateway/dataapi/',
     idleConfig: { idle: 10, timeout: 60, ping: 10 },
 };

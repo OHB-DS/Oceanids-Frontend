@@ -16,5 +16,8 @@ export class HeaderComponent {
   openLoginPage() {
     window.open('https://ohbds-identitymanagement-dev.azurewebsites.net/realms/OCEANIDS_TEST/account', '_blank');
   }
+  openOHBDSpage() {
+    window.open('https://www.ohb-ds.de/en/reference/oceanids', '_blank');
+  }
 }
 
